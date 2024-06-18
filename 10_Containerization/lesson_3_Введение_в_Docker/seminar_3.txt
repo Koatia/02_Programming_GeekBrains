@@ -1,0 +1,88 @@
+Урок 3. Введение в Docker (https://gb.ru/lessons/447439)
+
+https://docs.docker.com/engine/install/ubuntu/
+
+# Uninstall old versions
+sudo apt-get remove docker.io docker-compose docker-compose-v2 docker-doc podman-docker containerd runc
+
+# Uninstall all conflicting packages:
+for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
+
+# установим пару пакетов, которые назначат право для “apt” пользоваться пакетами по протоколу HTTPS:
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
+
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+
+# Install the Docker packages
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+#####################################
+
+# DB & web containers
+docker run -d --name mariadb --env MARIADB_ROOT_PASSWORD=12345678 mariadb
+4f2deb4506f5e91bf912df4f84cc44eb0418b1c26badcfa13f805676e55643cb
+
+ps -a
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS      NAMES
+4f2deb4506f5   mariadb   "docker-entrypoint.s…"   16 seconds ago   Up 16 seconds   3306/tcp   mariadb
+
+docker run --name phpmyadmin -d --link mariadb:db -p 8081:80 phpmyadmin/phpmyadmin
+Status: Downloaded newer image for phpmyadmin/phpmyadmin:latest
+992f95b835052733e1fb630eb14ee0e6e7e425f14344a9c0961a7feccccec009
+
+docker ps -a
+CONTAINER ID   IMAGE                   COMMAND                  CREATED          STATUS          PORTS                                   NAMES
+992f95b83505   phpmyadmin/phpmyadmin   "/docker-entrypoint.…"   33 seconds ago   Up 32 seconds   0.0.0.0:8081->80/tcp, :::8081->80/tcp   phpmyadmin
+4f2deb4506f5   mariadb                 "docker-entrypoint.s…"   5 minutes ago    Up 5 minutes    3306/tcp                                mariadb
+
+ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute
+       valid_lft forever preferred_lft forever
+2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 00:0c:29:94:b8:65 brd ff:ff:ff:ff:ff:ff
+    altname enp2s1
+    inet 192.168.222.128/24 metric 100 brd 192.168.222.255 scope global dynamic ens33
+       valid_lft 1442sec preferred_lft 1442sec
+    inet6 fe80::20c:29ff:fe94:b865/64 scope link
+       valid_lft forever preferred_lft forever
+3: lxcbr0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default qlen 1000
+    link/ether 00:16:3e:00:00:00 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.3.1/24 brd 10.0.3.255 scope global lxcbr0
+       valid_lft forever preferred_lft forever
+4: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
+    link/ether 02:42:46:eb:62:dc brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::42:46ff:feeb:62dc/64 scope link
+       valid_lft forever preferred_lft forever
+8: veth999a784@if7: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP group default
+    link/ether b6:df:5d:bb:7e:0f brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet6 fe80::b4df:5dff:febb:7e0f/64 scope link
+       valid_lft forever preferred_lft forever
+10: vethdd8b64b@if9: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP group default
+    link/ether fa:7d:68:a8:01:70 brd ff:ff:ff:ff:ff:ff link-netnsid 1
+    inet6 fe80::f87d:68ff:fea8:170/64 scope link
+       valid_lft forever preferred_lft forever
+
+http://192.168.222.128:8081/
+
+
+
+
+

@@ -1,0 +1,193 @@
+Урок 4. Dockerfile и слои (https://gb.ru/lessons/447440)
+
+sudo -s
+[sudo] password for ki:
+
+
+echo 'FROM ubuntu:24.04
+RUN apt update && \
+    apt install -y cowsay && \
+    ln -s /usr/games/cowsay /usr/bin/cowsay && \
+    rm -rf /var/lib/apt/lists/*
+CMD ["cowsay"]' > Dockerfile
+
+docker build -t cowsaytest .
+[+] Building 2.2s (6/6) FINISHED                                                        docker:default
+ => [internal] load build definition from Dockerfile                                              0.0s
+ => => transferring dockerfile: 204B                                                              0.0s
+ => [internal] load metadata for docker.io/library/ubuntu:24.04                                   2.2s
+ => [internal] load .dockerignore                                                                 0.0s
+ => => transferring context: 2B                                                                   0.0s
+ => [1/2] FROM docker.io/library/ubuntu:24.04@sha256:e3f92abc0967a6c19d0dfa2d55838833e947b9d74ed  0.0s
+ => CACHED [2/2] RUN apt update &&     apt install -y cowsay &&     ln -s /usr/games/cowsay /usr  0.0s
+ => exporting to image                                                                            0.0s
+ => => exporting layers                                                                           0.0s
+ => => writing image sha256:2a1979ae0d1ee86f47b12c0b072fc45bc81caf561413361fbb6645f4a67724c3      0.0s
+ => => naming to docker.io/library/cowsaytest                                                     0.0s
+
+# Добавление файла test.txt в образ
+
+echo '1514
+84684
+684968
+68488885
+55
+89789984
+684984' > test.txt
+
+cat test.txt
+1514
+84684
+684968
+68488885
+55
+89789984
+684984
+
+echo 'FROM ubuntu:24.04
+RUN apt update && \
+    apt install -y cowsay && \
+    ln -s /usr/games/cowsay /usr/bin/cowsay && \
+    rm -rf /var/lib/apt/lists/*
+COPY test.txt /
+CMD ["cowsay"]' > Dockerfile
+
+docker rmi cowsaytest
+Untagged: cowsaytest:latest
+Deleted: sha256:2a1979ae0d1ee86f47b12c0b072fc45bc81caf561413361fbb6645f4a67724c3
+
+docker build -t cowsaytest .
+[+] Building 2.1s (8/8) FINISHED                                                        docker:default
+ => [internal] load build definition from Dockerfile                                              0.0s
+ => => transferring dockerfile: 220B                                                              0.0s
+ => [internal] load metadata for docker.io/library/ubuntu:24.04                                   1.9s
+ => [internal] load .dockerignore                                                                 0.0s
+ => => transferring context: 2B                                                                   0.0s
+ => [1/3] FROM docker.io/library/ubuntu:24.04@sha256:e3f92abc0967a6c19d0dfa2d55838833e947b9d74ed  0.0s
+ => [internal] load build context                                                                 0.0s
+ => => transferring context: 81B                                                                  0.0s
+ => CACHED [2/3] RUN apt update &&     apt install -y cowsay &&     ln -s /usr/games/cowsay /usr  0.0s
+ => [3/3] COPY test.txt /                                                                         0.0s
+ => exporting to image                                                                            0.0s
+ => => exporting layers                                                                           0.0s
+ => => writing image sha256:6854e25d8befc68fb720be89c4bd23ce6290b8f84df3c3ca87085802a95efc16      0.0s
+ => => naming to docker.io/library/cowsaytest                                                     0.0s
+
+
+echo 'FROM ubuntu:24.04
+RUN apt update && \
+    apt install -y nginx && \
+    rm -rf /var/lib/apt/lists/*
+RUN echo "HI, I am in your container" \
+        >/usr/share/nginx/html/index.html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]' > Dockerfile
+
+cat Dockerfile
+FROM ubuntu:24.04
+RUN apt update && \
+    apt install -y nginx && \
+    rm -rf /var/lib/apt/lists/*
+RUN echo "HI, I am in your container" \
+        >/usr/share/nginx/html/index.html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
+
+docker build -t test .
+[+] Building 60.2s (7/7) FINISHED                                                       docker:default
+ => [internal] load build definition from Dockerfile                                              0.0s
+ => => transferring dockerfile: 231B                                                              0.0s
+ => [internal] load metadata for docker.io/library/ubuntu:24.04                                   2.2s
+ => [internal] load .dockerignore                                                                 0.0s
+ => => transferring context: 2B                                                                   0.0s
+ => CACHED [1/3] FROM docker.io/library/ubuntu:24.04@sha256:e3f92abc0967a6c19d0dfa2d55838833e947  0.0s
+ => [2/3] RUN apt update &&     apt install -y nginx &&     rm -rf /var/lib/apt/lists/*          57.4s
+ => [3/3] RUN echo "HI, I am in your container"         >/usr/share/nginx/html/index.html         0.5s
+ => exporting to image                                                                            0.1s
+ => => exporting layers                                                                           0.1s
+ => => writing image sha256:86dd17fc409b2059b66da00dd1271204407014d9e4dcf5b95131287040ca789c      0.0s
+ => => naming to docker.io/library/test                                                           0.0s
+
+
+docker ps -a
+CONTAINER ID   IMAGE          COMMAND                CREATED        STATUS                    PORTS     NAMES
+d2c4d2cb6876   d96de9adb346   "cowsay 'Hi Kostia'"   26 hours ago   Exited (0) 26 hours ago   sleepy_galois
+ee96838ae724   d96de9adb346   "bash"                 26 hours ago   Exited (0) 26 hours ago   kind_edison
+
+docker images
+REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+test         latest    86dd17fc409b   2 minutes ago    86.6MB
+cowsaytest   latest    6854e25d8bef   19 minutes ago   128MB
+<none>       <none>    0ae8a1ec08e5   26 hours ago     46MB
+<none>       <none>    a8b34625ca5c   26 hours ago     165MB
+<none>       <none>    d96de9adb346   26 hours ago     165MB
+
+
+cat Dockerfile
+FROM ubuntu:24.04
+RUN apt update && \
+    apt install -y nginx && \
+    rm -rf /var/lib/apt/lists/*
+RUN echo "HI, I am in your container" \
+        >/usr/share/nginx/html/index.html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
+
+docker ps -a
+CONTAINER ID   IMAGE          COMMAND                CREATED        STATUS                    PORTS     NAMES
+d2c4d2cb6876   d96de9adb346   "cowsay 'Hi Kostia'"   26 hours ago   Exited (0) 26 hours ago  sleepy_galois
+ee96838ae724   d96de9adb346   "bash"                 26 hours ago   Exited (0) 26 hours ago  kind_edison
+
+docker rm sleepy_galois
+sleepy_galois
+
+docker rm kind_edison
+kind_edison
+
+docker ps -a
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+docker run -d -p 8081:80 test
+2b18b36ef493d51c2b7fcc5f06419132d60bc46350b940b7c13dc89f732c4e13
+
+docker ps -a
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS         PORTS                                   NAMES
+2b18b36ef493   test      "nginx -g 'daemon of…"   19 seconds ago   Up 18 seconds   0.0.0.0:8081->80/tcp, :::8081->80/tcp   vibrant_ride
+
+
+curl localhost:8081
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+
+
+# Remove all images
+docker rmi $(docker images -aq) --force
+
+# remove container
+docker rm $(docker ps -a -q) --force
+
+# Очистка диска (удаление образов и остановленных контейнеров)
+docker system prune -af

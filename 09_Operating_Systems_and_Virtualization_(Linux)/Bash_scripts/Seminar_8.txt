@@ -1,0 +1,181 @@
+PowerShell 7.4.2
+PS C:\Users\Kostia> ssh ki@192.168.1.66
+ki@192.168.1.66's password:
+Welcome to Ubuntu 24.04 LTS (GNU/Linux 6.8.0-31-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Sat Jun  1 06:42:02 AM UTC 2024
+
+  System load:  0.0                Processes:               220
+  Usage of /:   21.9% of 11.21GB   Users logged in:         1
+  Memory usage: 5%                 IPv4 address for enp0s3: 192.168.1.66
+  Swap usage:   0%
+
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+
+
+Last login: Sat Jun  1 06:37:54 2024 from 192.168.1.98
+ki@ki:~$
+ki@ki:~$
+ki@ki:~$ printenv
+SHELL=/bin/bash
+PWD=/home/ki
+LOGNAME=ki
+XDG_SESSION_TYPE=tty
+HOME=/home/ki
+LANG=en_US.UTF-8
+LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:
+SSH_CONNECTION=192.168.1.98 53786 192.168.1.66 22
+LESSCLOSE=/usr/bin/lesspipe %s %s
+XDG_SESSION_CLASS=user
+TERM=xterm-256color
+LESSOPEN=| /usr/bin/lesspipe %s
+USER=ki
+SHLVL=1
+XDG_SESSION_ID=13
+XDG_RUNTIME_DIR=/run/user/1000
+SSH_CLIENT=192.168.1.98 53786 22
+XDG_DATA_DIRS=/usr/local/share:/usr/share:/var/lib/snapd/desktop
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+SSH_TTY=/dev/pts/0
+_=/usr/bin/printenv
+ki@ki:~$
+ki@ki:~$
+ki@ki:~$ cat > testscript1
+#!/bin/bash
+
+directory=$1
+
+hidden_count=$(ls -A $directory | grep '^\.' | wc -l)
+echo "Hidden ﬁles in $directory found: $hidden_count"
+^C
+ki@ki:~$ nano testscript1
+ki@ki:~$ bash testscript1
+Hidden files in  found: 8
+ki@ki:~$ chmod +x testscript1
+ki@ki:~$
+ki@ki:~$ ll
+total 44
+drwxr-x--- 5 ki   ki   4096 Jun  1 06:46 ./
+drwxr-xr-x 3 root root 4096 Jun  1 05:44 ../
+-rw------- 1 ki   ki     29 Jun  1 06:41 .bash_history
+-rw-r--r-- 1 ki   ki    220 Mar 31 08:41 .bash_logout
+-rw-r--r-- 1 ki   ki   3771 Mar 31 08:41 .bashrc
+drwx------ 2 ki   ki   4096 Jun  1 05:45 .cache/
+drwxrwxr-x 3 ki   ki   4096 Jun  1 06:38 .local/
+-rw-r--r-- 1 ki   ki    807 Mar 31 08:41 .profile
+drwx------ 2 ki   ki   4096 Jun  1 05:45 .ssh/
+-rw-r--r-- 1 ki   ki      0 Jun  1 05:48 .sudo_as_admin_successful
+-rwxrwxr-x 1 ki   ki    136 Jun  1 06:46 testscript1*
+-rw-r--r-- 1 root root  226 Jun  1 06:09 testscript2
+ki@ki:~$
+ki@ki:~$ ./testscript1
+Hidden files in  found: 8
+ki@ki:~$
+ki@ki:~$ cat > testscript2
+-bash: testscript2: Permission denied
+ki@ki:~$ sudo rm testscript2
+[sudo] password for ki:
+ki@ki:~$ ll
+total 40
+drwxr-x--- 5 ki   ki   4096 Jun  1 06:50 ./
+drwxr-xr-x 3 root root 4096 Jun  1 05:44 ../
+-rw------- 1 ki   ki     29 Jun  1 06:41 .bash_history
+-rw-r--r-- 1 ki   ki    220 Mar 31 08:41 .bash_logout
+-rw-r--r-- 1 ki   ki   3771 Mar 31 08:41 .bashrc
+drwx------ 2 ki   ki   4096 Jun  1 05:45 .cache/
+drwxrwxr-x 3 ki   ki   4096 Jun  1 06:38 .local/
+-rw-r--r-- 1 ki   ki    807 Mar 31 08:41 .profile
+drwx------ 2 ki   ki   4096 Jun  1 05:45 .ssh/
+-rw-r--r-- 1 ki   ki      0 Jun  1 05:48 .sudo_as_admin_successful
+-rwxrwxr-x 1 ki   ki    136 Jun  1 06:46 testscript1*
+ki@ki:~$
+ki@ki:~$
+ki@ki:~$ cat > testscript2
+#!/bin/bash
+
+# Example 1
+for h in file{01..20}
+do
+        echo "Example 1 $h"
+done
+
+# Example 2
+c=10
+while [ $c -ge 0 ]
+do
+        echo "Example 2 $c"
+        let "c = c - 1"
+done
+
+# Example 3
+for (( c=1; c<=5; c++ ))
+do
+        echo "Example 3 $c"
+done
+^C
+ki@ki:~$
+ki@ki:~$ bash testscript2
+Example 1 file01
+Example 1 file02
+Example 1 file03
+Example 1 file04
+Example 1 file05
+Example 1 file06
+Example 1 file07
+Example 1 file08
+Example 1 file09
+Example 1 file10
+Example 1 file11
+Example 1 file12
+Example 1 file13
+Example 1 file14
+Example 1 file15
+Example 1 file16
+Example 1 file17
+Example 1 file18
+Example 1 file19
+Example 1 file20
+Example 2 10
+Example 2 9
+Example 2 8
+Example 2 7
+Example 2 6
+Example 2 5
+Example 2 4
+Example 2 3
+Example 2 2
+Example 2 1
+Example 2 0
+Example 3 1
+Example 3 2
+Example 3 3
+Example 3 4
+Example 3 5
+ki@ki:~$
+ki@ki:~$
+ki@ki:~$ sudo apt update; sudo apt upgrade
+Hit:1 http://ru.archive.ubuntu.com/ubuntu noble InRelease
+Hit:2 http://ru.archive.ubuntu.com/ubuntu noble-updates InRelease
+Hit:3 http://ru.archive.ubuntu.com/ubuntu noble-backports InRelease
+Hit:4 http://security.ubuntu.com/ubuntu noble-security InRelease
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+All packages are up to date.
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+Calculating upgrade... Done
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+ki@ki:~$

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Example 1
+for h in file{01..20}
+do
+	echo "Example 1 $h"
+done
+
+# Example 2
+c=10
+while [ $c -ge 0 ]
+do
+	echo "Example 2 $c"
+	let "c = c - 1"
+done
+
+# Example 3
+for (( c=1; c<=5; c++ ))
+do
+	echo "Example 3 $c"
+done

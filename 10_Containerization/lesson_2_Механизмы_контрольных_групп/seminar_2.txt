@@ -1,0 +1,367 @@
+Урок 2. Механизмы контрольных групп (https://gb.ru/lessons/447438)
+
+PowerShell 7.4.2
+PS C:\Users\Kostia> ssh ki@192.168.222.128
+ki@192.168.222.128's password:
+Welcome to Ubuntu 24.04 LTS (GNU/Linux 6.8.0-35-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Thu Jun  6 04:05:38 AM UTC 2024
+
+  System load:  0.27              Processes:              283
+  Usage of /:   42.4% of 9.75GB   Users logged in:        1
+  Memory usage: 7%                IPv4 address for ens33: 192.168.222.128
+  Swap usage:   0%
+
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+
+
+Last login: Thu Jun  6 04:05:39 2024 from 192.168.222.1
+
+sudo -s
+
+########### cgroups
+
+apt install cgroup-tools
+
+unshare --fork --pid --mount-proc bash
+ps aux
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.1   7604  4224 pts/1    S    06:33   0:00 bash
+root           8  0.0  0.1  10884  4480 pts/1    R+   06:33   0:00 ps aux
+
+cgcreate -a $USER -g memory:mytestgroup -g cpu:mytestgroup
+ls /sys/fs/cgroup/mytestgroup/
+cgroup.controllers      cpu.idle         memory.events        memory.swap.current
+cgroup.events           cpu.max          memory.events.local  memory.swap.events
+cgroup.freeze           cpu.max.burst    memory.high          memory.swap.high
+cgroup.kill             cpu.pressure     memory.low           memory.swap.max
+cgroup.max.depth        cpu.stat         memory.max           memory.swap.peak
+cgroup.max.descendants  cpu.stat.local   memory.min           memory.zswap.current
+cgroup.pressure         cpu.uclamp.max   memory.numa_stat     memory.zswap.max
+cgroup.procs            cpu.uclamp.min   memory.oom.group     memory.zswap.writeback
+cgroup.stat             cpu.weight       memory.peak          pids.current
+cgroup.subtree_control  cpu.weight.nice  memory.pressure      pids.events
+cgroup.threads          io.pressure      memory.reclaim       pids.max
+cgroup.type             memory.current   memory.stat          pids.peak
+
+exit
+cgexec -g memory:mytestgroup bash
+
+exit
+
+########### lxc (англ. Linux Containers)
+
+apt install lxc lxc-templates debootstrap bridge-utils
+lxc-create -n test123 -t ubuntu
+lxc-ls
+
+lxc-stop test123
+
+nano /var/lib/lxc/test123/config
+  GNU nano 7.2                          /var/lib/lxc/test123/config                                    # Template used to create this container: /usr/share/lxc/templates/lxc-ubuntu
+# Parameters passed to the template:
+# For additional config options, please look at lxc.container.conf(5)
+
+# Uncomment the following line to support nesting containers:
+#lxc.include = /usr/share/lxc/config/nesting.conf
+# (Be aware this has security implications)
+
+
+# Common configuration
+lxc.include = /usr/share/lxc/config/ubuntu.common.conf
+
+# Container specific configuration
+lxc.apparmor.profile = generated
+lxc.apparmor.allow_nesting = 1
+lxc.rootfs.path = dir:/var/lib/lxc/test123/rootfs
+lxc.uts.name = test123
+lxc.arch = amd64
+
+# Network configuration
+lxc.net.0.type = veth
+lxc.net.0.hwaddr = 00:16:3e:c4:35:3a
+lxc.net.0.link = lxcbr0
+lxc.net.0.flags = up
+
+#Меняем lxc.uts.name:
+lxc.uts.name = test123
+
+#Добавляем ограничение по опративной памяти и включаем автозапуск:
+lxc.cgroup2.memory.max = 256M
+lxc.start.auto = 1
+
+
+root@ki:/home/ki# free -m
+               total        used        free      shared  buff/cache   available
+Mem:            3868         543        1877           1        1732        3325
+Swap:           1969           0        1969
+
+lxc-start test123
+lxc-attach test123
+
+root@test123:/# free -m
+               total        used        free      shared  buff/cache   available
+Mem:             256          24         186           0          44         231
+Swap:              0           0           0
+
+exit
+
+
+ls /sys/fs/cgroup/lxc.payload.test123/
+cgroup.controllers               cpu.weight.nice           memory.min
+cgroup.events                    dev-hugepages.mount       memory.numa_stat
+cgroup.freeze                    hugetlb.1GB.current       memory.oom.group
+cgroup.kill                      hugetlb.1GB.events        memory.peak
+cgroup.max.depth                 hugetlb.1GB.events.local  memory.pressure
+cgroup.max.descendants           hugetlb.1GB.max           memory.reclaim
+cgroup.pressure                  hugetlb.1GB.numa_stat     memory.stat
+cgroup.procs                     hugetlb.1GB.rsvd.current  memory.swap.current
+cgroup.stat                      hugetlb.1GB.rsvd.max      memory.swap.events
+cgroup.subtree_control           hugetlb.2MB.current       memory.swap.high
+cgroup.threads                   hugetlb.2MB.events        memory.swap.max
+cgroup.type                      hugetlb.2MB.events.local  memory.swap.peak
+cpu.idle                         hugetlb.2MB.max           memory.zswap.current
+cpu.max                          hugetlb.2MB.numa_stat     memory.zswap.max
+cpu.max.burst                    hugetlb.2MB.rsvd.current  memory.zswap.writeback
+cpu.pressure                     hugetlb.2MB.rsvd.max      misc.current
+cpuset.cpus                      init.scope                misc.events
+cpuset.cpus.effective            io.max                    misc.max
+cpuset.cpus.exclusive            io.pressure               pids.current
+cpuset.cpus.exclusive.effective  io.prio.class             pids.events
+cpuset.cpus.partition            io.stat                   pids.max
+cpuset.mems                      io.weight                 pids.peak
+cpuset.mems.effective            memory.current            rdma.current
+cpu.stat                         memory.events             rdma.max
+cpu.stat.local                   memory.events.local       system.slice
+cpu.uclamp.max                   memory.high               user.slice
+cpu.uclamp.min                   memory.low
+cpu.weight                       memory.max
+
+lxc-ls -f
+NAME    STATE   AUTOSTART GROUPS IPV4       IPV6 UNPRIVILEGED
+test123 RUNNING 1         -      10.0.3.174 -    false
+
+ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute
+       valid_lft forever preferred_lft forever
+2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 00:0c:29:94:b8:65 brd ff:ff:ff:ff:ff:ff
+    altname enp2s1
+    inet 192.168.222.128/24 metric 100 brd 192.168.222.255 scope global dynamic ens33
+       valid_lft 1156sec preferred_lft 1156sec
+    inet6 fe80::20c:29ff:fe94:b865/64 scope link
+       valid_lft forever preferred_lft forever
+3: lxcbr0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 00:16:3e:00:00:00 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.3.1/24 brd 10.0.3.255 scope global lxcbr0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::216:3eff:fe00:0/64 scope link
+       valid_lft forever preferred_lft forever
+5: vethMY7YKA@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master lxcbr0 state UP group default qlen 1000
+    link/ether fe:40:22:23:2b:53 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet6 fe80::fc40:22ff:fe23:2b53/64 scope link
+       valid_lft forever preferred_lft forever
+
+ping 10.0.3.174
+PING 10.0.3.174 (10.0.3.174) 56(84) bytes of data.
+64 bytes from 10.0.3.174: icmp_seq=1 ttl=64 time=0.049 ms
+64 bytes from 10.0.3.174: icmp_seq=2 ttl=64 time=0.085 ms
+64 bytes from 10.0.3.174: icmp_seq=3 ttl=64 time=0.058 ms
+64 bytes from 10.0.3.174: icmp_seq=4 ttl=64 time=0.097 ms
+
+lxc-stop test123
+lxc-destroy test123
+
+
+
+### Создадим два контейнера и настроим взаимодействие между ними
+
+lxc-create -n test1 -t ubuntu
+lxc-create -n test2 -t ubuntu
+
+lxc-ls -f
+NAME  STATE   AUTOSTART GROUPS IPV4 IPV6 UNPRIVILEGED
+test1 STOPPED 0         -      -    -    false
+test2 STOPPED 0         -      -    -    false
+
+lxc-start test1
+lxc-start test2
+
+lxc-ls -f
+NAME  STATE   AUTOSTART GROUPS IPV4       IPV6 UNPRIVILEGED
+test1 RUNNING 0         -      10.0.3.119 -    false
+test2 RUNNING 0         -      10.0.3.56  -    false
+
+lxc-attach test1
+root@test1:/# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: eth0@if6: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 00:16:3e:2b:35:04 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 10.0.3.119/24 metric 100 brd 10.0.3.255 scope global dynamic eth0
+       valid_lft 3538sec preferred_lft 3538sec
+    inet6 fe80::216:3eff:fe2b:3504/64 scope link
+       valid_lft forever preferred_lft forever
+
+exit
+
+lxc-attach test2
+root@test2:/# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: eth0@if7: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 00:16:3e:b3:74:b7 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 10.0.3.56/24 metric 100 brd 10.0.3.255 scope global dynamic eth0
+       valid_lft 3486sec preferred_lft 3486sec
+    inet6 fe80::216:3eff:feb3:74b7/64 scope link
+       valid_lft forever preferred_lft forever
+
+root@test2:/# ping 10.0.3.119
+PING 10.0.3.119 (10.0.3.119) 56(84) bytes of data.
+64 bytes from 10.0.3.119: icmp_seq=1 ttl=64 time=0.070 ms
+64 bytes from 10.0.3.119: icmp_seq=2 ttl=64 time=0.097 ms
+
+root@test2:/# exit
+
+lxc-attach test1
+root@test1:/# ping 10.0.3.56
+PING 10.0.3.56 (10.0.3.56) 56(84) bytes of data.
+64 bytes from 10.0.3.56: icmp_seq=1 ttl=64 time=0.040 ms
+64 bytes from 10.0.3.56: icmp_seq=2 ttl=64 time=0.128 ms
+
+root@test1:/# exit
+
+###### Добавить статический ip-address в каждый контейнер
+
+echo 'lxc.net.0.ipv4.address = 10.0.3.25/24' >> /var/lib/lxc/test1/config
+cat /var/lib/lxc/test1/config
+
+# Template used to create this container: /usr/share/lxc/templates/lxc-ubuntu
+# Parameters passed to the template:
+# For additional config options, please look at lxc.container.conf(5)
+
+# Uncomment the following line to support nesting containers:
+#lxc.include = /usr/share/lxc/config/nesting.conf
+# (Be aware this has security implications)
+
+
+# Common configuration
+lxc.include = /usr/share/lxc/config/ubuntu.common.conf
+
+# Container specific configuration
+lxc.apparmor.profile = generated
+lxc.apparmor.allow_nesting = 1
+lxc.rootfs.path = dir:/var/lib/lxc/test1/rootfs
+lxc.uts.name = test1
+lxc.arch = amd64
+
+# Network configuration
+lxc.net.0.type = veth
+lxc.net.0.hwaddr = 00:16:3e:2b:35:04
+lxc.net.0.link = lxcbr0
+lxc.net.0.flags = up
+lxc.net.0.ipv4.address = 10.0.3.25/24
+
+
+
+echo 'lxc.net.0.ipv4.address = 10.0.3.35/24' >> /var/lib/lxc/test2/config
+cat /var/lib/lxc/test2/config
+
+# Template used to create this container: /usr/share/lxc/templates/lxc-ubuntu
+# Parameters passed to the template:
+# For additional config options, please look at lxc.container.conf(5)
+
+# Uncomment the following line to support nesting containers:
+#lxc.include = /usr/share/lxc/config/nesting.conf
+# (Be aware this has security implications)
+
+
+# Common configuration
+lxc.include = /usr/share/lxc/config/ubuntu.common.conf
+
+# Container specific configuration
+lxc.apparmor.profile = generated
+lxc.apparmor.allow_nesting = 1
+lxc.rootfs.path = dir:/var/lib/lxc/test2/rootfs
+lxc.uts.name = test2
+lxc.arch = amd64
+
+# Network configuration
+lxc.net.0.type = veth
+lxc.net.0.hwaddr = 00:16:3e:b3:74:b7
+lxc.net.0.link = lxcbr0
+lxc.net.0.flags = up
+lxc.net.0.ipv4.address = 10.0.3.35/24
+
+
+lxc-ls -f
+NAME  STATE   AUTOSTART GROUPS IPV4       IPV6 UNPRIVILEGED
+test1 RUNNING 0         -      10.0.3.119 -    false
+test2 RUNNING 0         -      10.0.3.56  -    false
+
+lxc-stop test1
+lxc-stop test2
+
+lxc-start test2
+lxc-start test1
+lxc-ls -f
+NAME  STATE   AUTOSTART GROUPS IPV4                  IPV6 UNPRIVILEGED
+test1 RUNNING 0         -      10.0.3.119, 10.0.3.25 -    false
+test2 RUNNING 0         -      10.0.3.35, 10.0.3.56  -    false
+
+
+########## Выполнение команды без входа в контейнер (lxc-attach)
+
+lxc-execute -n test1 /bin/ls
+bin                boot  etc   lib                lib64  mnt  proc  run   sbin.usr-is-merged  sys  usr
+bin.usr-is-merged  dev   home  lib.usr-is-merged  media  opt  root  sbin  srv                 tmp  var
+
+########## Выполнение команды rm -rf / в контейнерe
+lxc-start test1
+lxc-attach -n test1
+root@test1:/# hostname
+test1
+
+rm -rf / --no-preserve-root
+
+root@test1:/# ls
+bash: ls: command not found
+root@test1:/# exit
+exit
+root@ki:/home/ki# ls
+root@ki:/home/ki# pwd
+/home/ki
+
+lxc-attach -n test1
+lxc-attach: test1: ../src/lxc/utils.c: open_devnull: 1231 No such file or directory - Can't open /dev/null
+lxc-attach: test1: ../src/lxc/utils.c: open_devnull: 1231 No such file or directory - Can't open /dev/null
+lxc-attach: test1: ../src/lxc/attach.c: lxc_attach_run_shell: 1893 No such file or directory - Failed to execute shell
+
+lxc-stop test1
+
+lxc-destroy test1
+lxc-destroy test2
+
+lxc-ls -f

@@ -1,0 +1,16 @@
+# Шаг 1: Обновление системы
+sudo apt update && sudo apt upgrade -y
+
+# Шаг 2:  проверяем занятые сокеты (локальный nginx на 80 порту)
+sudo ss -ntlp
+
+# Stop system nginx (если обноружен на 80 порту)
+sudo systemctl stop nginx
+
+# Остонавливаем и удаляем запущенный контейнер nginx
+sudo docker ps
+sudo docker stop nginx1
+sudo docker rm nginx1
+
+# Удаляем образ nginx
+sudo docker rmi nginx

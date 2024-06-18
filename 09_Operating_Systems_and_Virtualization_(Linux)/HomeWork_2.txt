@@ -1,0 +1,93 @@
+kostia@kostia-VirtualBox:~/lesson2$ cat > file1.txt
+ujsef 876 kjh
+asf 426366 53
+kostia@kostia-VirtualBox:~/lesson2$ cat > file2.txt
+oiras  opija
+setg 246sregr
+kostia@kostia-VirtualBox:~/lesson2$ cat file1.txt file2.txt > combined.txt
+kostia@kostia-VirtualBox:~/lesson2$ cat combined.txt
+ujsef 876 kjh
+asf 426366 53
+oiras  opija
+setg 246sregr
+kostia@kostia-VirtualBox:~/lesson2$ mv combined.txt renamed_combined.txt
+kostia@kostia-VirtualBox:~/lesson2$ ll
+total 20
+drwxrwxr-x  2 kostia kostia 4096 May 17 17:48 ./
+drwxr-x--- 16 kostia kostia 4096 May 17 17:44 ../
+-rw-rw-r--  1 kostia kostia   28 May 17 17:47 file1.txt
+-rw-rw-r--  1 kostia kostia   27 May 17 17:47 file2.txt
+-rw-rw-r--  1 kostia kostia   55 May 17 17:47 renamed_combined.txt
+kostia@kostia-VirtualBox:~/lesson2$ touch file3.txt file4.txt file5.txt
+kostia@kostia-VirtualBox:~/lesson2$ mkdir my_directory
+kostia@kostia-VirtualBox:~/lesson2$ mv renamed_combined.txt my_directory/
+kostia@kostia-VirtualBox:~/lesson2$ ll
+total 20
+drwxrwxr-x  3 kostia kostia 4096 May 17 17:49 ./
+drwxr-x--- 16 kostia kostia 4096 May 17 17:44 ../
+-rw-rw-r--  1 kostia kostia   28 May 17 17:47 file1.txt
+-rw-rw-r--  1 kostia kostia   27 May 17 17:47 file2.txt
+-rw-rw-r--  1 kostia kostia    0 May 17 17:49 file3.txt
+-rw-rw-r--  1 kostia kostia    0 May 17 17:49 file4.txt
+-rw-rw-r--  1 kostia kostia    0 May 17 17:49 file5.txt
+drwxrwxr-x  2 kostia kostia 4096 May 17 17:49 my_directory/
+kostia@kostia-VirtualBox:~/lesson2$ rm file1.txt file2.txt file3.txt file4.txt file5.txt
+kostia@kostia-VirtualBox:~/lesson2$ rm -r my_directory
+kostia@kostia-VirtualBox:~/lesson2$ ll
+total 8
+drwxrwxr-x  2 kostia kostia 4096 May 17 17:50 ./
+drwxr-x--- 16 kostia kostia 4096 May 17 17:44 ../
+kostia@kostia-VirtualBox:~/lesson2$
+kostia@kostia-VirtualBox:~/lesson2$ echo "This is some content for file1" > file1
+kostia@kostia-VirtualBox:~/lesson2$ cp file1 file2
+kostia@kostia-VirtualBox:~/lesson2$ ln -s ~/lesson2/file1 file3
+kostia@kostia-VirtualBox:~/lesson2$ ln file1 file4
+kostia@kostia-VirtualBox:~/lesson2$ ls -ali
+total 20
+524365 drwxrwxr-x  2 kostia kostia 4096 May 17 17:53 .
+524290 drwxr-x--- 16 kostia kostia 4096 May 17 17:44 ..
+524536 -rw-rw-r--  2 kostia kostia   31 May 17 17:53 file1
+524543 -rw-rw-r--  1 kostia kostia   31 May 17 17:53 file2
+524547 lrwxrwxrwx  1 kostia kostia   26 May 17 17:53 file3 -> /home/kostia/lesson2/file1
+524536 -rw-rw-r--  2 kostia kostia   31 May 17 17:53 file4
+kostia@kostia-VirtualBox:~/lesson2$ rm file1
+kostia@kostia-VirtualBox:~/lesson2$ cat file2
+This is some content for file1
+kostia@kostia-VirtualBox:~/lesson2$ cat file3
+cat: file3: No such file or directory
+kostia@kostia-VirtualBox:~/lesson2$ cat file4
+This is some content for file1
+kostia@kostia-VirtualBox:~/lesson2$ mv file2 new_file2 && mv file3 new_file3 && mv file4 new_file4
+kostia@kostia-VirtualBox:~/lesson2$ ll
+total 16
+drwxrwxr-x  2 kostia kostia 4096 May 17 17:55 ./
+drwxr-x--- 16 kostia kostia 4096 May 17 17:44 ../
+-rw-rw-r--  1 kostia kostia   31 May 17 17:53 new_file2
+lrwxrwxrwx  1 kostia kostia   26 May 17 17:53 new_file3 -> /home/kostia/lesson2/file1
+-rw-rw-r--  1 kostia kostia   31 May 17 17:53 new_file4
+kostia@kostia-VirtualBox:~/lesson2$ ln -s new_file2 new_link
+kostia@kostia-VirtualBox:~/lesson2$ ll
+total 16
+drwxrwxr-x  2 kostia kostia 4096 May 17 17:57 ./
+drwxr-x--- 16 kostia kostia 4096 May 17 17:44 ../
+-rw-rw-r--  1 kostia kostia   31 May 17 17:53 new_file2
+lrwxrwxrwx  1 kostia kostia   26 May 17 17:53 new_file3 -> /home/kostia/lesson2/file1
+-rw-rw-r--  1 kostia kostia   31 May 17 17:53 new_file4
+lrwxrwxrwx  1 kostia kostia    9 May 17 17:57 new_link -> new_file2
+kostia@kostia-VirtualBox:~/lesson2$ mkdir new_directory
+kostia@kostia-VirtualBox:~/lesson2$ mv new_link new_file3 new_directory/
+kostia@kostia-VirtualBox:~/lesson2$ ll
+total 20
+drwxrwxr-x  3 kostia kostia 4096 May 17 17:58 ./
+drwxr-x--- 16 kostia kostia 4096 May 17 17:44 ../
+drwxrwxr-x  2 kostia kostia 4096 May 17 17:58 new_directory/
+-rw-rw-r--  1 kostia kostia   31 May 17 17:53 new_file2
+-rw-rw-r--  1 kostia kostia   31 May 17 17:53 new_file4
+kostia@kostia-VirtualBox:~/lesson2$ cd new_directory
+kostia@kostia-VirtualBox:~/lesson2/new_directory$ ll
+total 8
+drwxrwxr-x 2 kostia kostia 4096 May 17 17:58 ./
+drwxrwxr-x 3 kostia kostia 4096 May 17 17:58 ../
+lrwxrwxrwx 1 kostia kostia   26 May 17 17:53 new_file3 -> /home/kostia/lesson2/file1
+lrwxrwxrwx 1 kostia kostia    9 May 17 17:57 new_link -> new_file2
+kostia@kostia-VirtualBox:~/lesson2/new_directory$

@@ -1,0 +1,431 @@
+# Обновление системы
+sudo apt update && sudo apt upgrade -y
+
+# установим пару пакетов, которые назначат право для “apt” пользоваться пакетами по протоколу HTTPS:
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
+
+https://docs.docker.com/engine/install/ubuntu/
+
+# Uninstall old versions
+sudo apt-get remove docker.io docker-compose docker-compose-v2 docker-doc podman-docker
+
+# Uninstall all conflicting packages:
+for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
+
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+
+# Install the Docker packages
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+#####################################
+
+# Проверим, что Docker работает:
+sudo systemctl status docker
+
+
+# Install Compose standalone
+https://docs.docker.com/compose/install/standalone/
+
+# To download and install Compose standalone, run:
+curl -SL https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+
+# Apply executable permissions to the standalone binary in the target path for the installation.
+chmod +x /usr/local/bin/docker-compose
+
+# Test and execute compose commands using docker-compose.
+docker-compose --version
+
+
+# If the command docker-compose fails after installation, check your path. You can also create a symbolic link to /usr/bin or any other directory in your path. For example:
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+################################################
+
+# Шаг 2: Установка зеркала Docker в систему:
+sudo sh -c 'echo "{\"registry-mirrors\": [\"https://dh-mirror.gitverse.ru\"]}" > /etc/docker/daemon.json'
+
+sudo service docker restart
+
+# А в логах докера что было?
+sudo journalctl -u docker.service SYSLOG_IDENTIFIER=dockerd --since="1d ago"
+
+
+
+# Docker Compose
+sudo apt install docker-compose
+
+# Остонавливаем и удаляем запущенный контейнер nginx
+docker stop nginx1
+docker rm nginx1
+
+# Удаляем образ nginx
+docker rmi nginx
+
+#################################################
+
+# Install WordPress With Docker Compose
+https://www.digitalocean.com/community/tutorials/how-to-install-wordpress-with-docker-compose
+
+
+mkdir wordpress
+cd wordpress
+
+# Defining Environment Variables
+echo 'MYSQL_ROOT_PASSWORD=1qaz!QAZ
+MYSQL_USER=wp
+MYSQL_PASSWORD=1qaz!QAZ' > .env
+
+# Defining the Web Server Configuration
+mkdir nginx-conf
+echo 'server {
+        listen 80;
+        listen [::]:80;
+        server_name example.com www.example.com;
+        index index.php index.html index.htm;
+        root /var/www/html;
+
+        location ~ /.well-known/acme-challenge {
+                allow all;
+                root /var/www/html;
+        }
+
+        location / {
+                try_files $uri $uri/ /index.php$is_args$args;
+        }
+
+        location ~ \.php$ {
+                try_files $uri =404;
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                fastcgi_pass wordpress:9000;
+                fastcgi_index index.php;
+                include fastcgi_params;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                fastcgi_param PATH_INFO $fastcgi_path_info;
+        }
+
+        location ~ /\.ht {
+                deny all;
+        }
+
+        location = /favicon.ico {
+                log_not_found off; access_log off;
+        }
+        location = /robots.txt {
+                log_not_found off; access_log off; allow all;
+        }
+        location ~* \.(css|gif|ico|jpeg|jpg|js|png)$ {
+                expires max;
+                log_not_found off;
+        }
+}' > nginx-conf/nginx.conf
+
+# create and open the docker-compose.yml file:
+cat > docker-compose.yml
+
+version: '3'
+
+services:
+  db:
+    image: mysql:8.4
+    container_name: db
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - MYSQL_DATABASE=wordpress
+    volumes:
+      - dbdata:/var/lib/mysql
+    command: '--default-authentication-plugin=mysql_native_password'
+    networks:
+      - app-network
+
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress:6.5.3-php8.1-fpm-alpine
+    container_name: wordpress
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - WORDPRESS_DB_HOST=db:3306
+      - WORDPRESS_DB_USER=$MYSQL_USER
+      - WORDPRESS_DB_PASSWORD=$MYSQL_PASSWORD
+      - WORDPRESS_DB_NAME=wordpress
+    volumes:
+      - wordpress:/var/www/html
+    networks:
+      - app-network
+
+  webserver:
+    depends_on:
+      - wordpress
+    image: nginx:1.27.0-alpine
+    container_name: webserver
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - wordpress:/var/www/html
+      - ./nginx-conf:/etc/nginx/conf.d
+    networks:
+      - app-network
+volumes:
+  wordpress:
+  dbdata:
+
+networks:
+    app-network:
+      driver: bridge
+
+root@kostia:/home/kostia/wordpress# tree
+.
+├── docker-compose.yml
+└── nginx-conf
+    └── nginx.conf
+
+2 directories, 2 files
+
+####
+# Освобождаем порт 80 (смотри _FirstStep)
+sudo ss -ntlp
+
+
+# Start your containers with the docker-compose up command
+
+ki@ki:~/wordpress$ sudo docker-compose up -d
+WARN[0000] /home/ki/wordpress/docker-compose.yml: `version` is obsolete
+[+] Running 38/38
+ ✔ wordpress Pulled                                                                              70.7s
+   ✔ d25f557d7f31 Pull complete                                                                  42.6s
+   ✔ 96b8f5633756 Pull complete                                                                  42.8s
+   ✔ a4a3c078331c Pull complete                                                                  43.4s
+   ✔ 6140bcc3b043 Pull complete                                                                  43.5s
+   ✔ ef31d4de059c Pull complete                                                                  47.7s
+   ✔ f3baf0b8ab69 Pull complete                                                                  47.7s
+   ✔ 05a34c7b4147 Pull complete                                                                  50.1s
+   ✔ 6570cfa0e781 Pull complete                                                                  50.1s
+   ✔ a28d868a6b5e Pull complete                                                                  50.1s
+   ✔ b1806d97adfa Pull complete                                                                  50.2s
+   ✔ af8688a7a459 Pull complete                                                                  59.6s
+   ✔ 2eefad955b38 Pull complete                                                                  59.7s
+   ✔ 682cdafd1806 Pull complete                                                                  59.7s
+   ✔ a066f72411b3 Pull complete                                                                  59.7s
+   ✔ 834db0811e1e Pull complete                                                                  67.3s
+   ✔ 5f1be5546212 Pull complete                                                                  67.4s
+   ✔ 4d6e15a5a28e Pull complete                                                                  67.4s
+ ✔ webserver Pulled                                                                              46.3s
+   ✔ 4abcf2066143 Pull complete                                                                  24.4s
+   ✔ b1e69ebc7f92 Pull complete                                                                  30.6s
+   ✔ 628158b45bce Pull complete                                                                  33.5s
+   ✔ 346e52e95fa0 Pull complete                                                                  35.2s
+   ✔ 8c57fb1cd644 Pull complete                                                                  35.7s
+   ✔ dc3800d1d0f2 Pull complete                                                                  36.4s
+   ✔ e3227d68030d Pull complete                                                                  36.8s
+   ✔ 8c50e1264d11 Pull complete                                                                  43.0s
+ ✔ db Pulled                                                                                     47.3s
+   ✔ 07bc88e18c4a Pull complete                                                                  15.3s
+   ✔ 1a9c1668bf49 Pull complete                                                                  15.3s
+   ✔ 1021dda8eecf Pull complete                                                                  15.3s
+   ✔ fb61b56acac1 Pull complete                                                                  15.5s
+   ✔ 0bca83908a5b Pull complete                                                                  15.5s
+   ✔ 165e8b3d37ca Pull complete                                                                  15.5s
+   ✔ 3e1b086f1295 Pull complete                                                                  35.6s
+   ✔ dba651668484 Pull complete                                                                  35.6s
+   ✔ ed90f5355e12 Pull complete                                                                  44.0s
+   ✔ 0412f59ab2b5 Pull complete                                                                  44.0s
+[+] Running 6/6
+ ✔ Network wordpress_app-network  Created                                                         0.0s
+ ✔ Volume "wordpress_wordpress"   Created                                                         0.0s
+ ✔ Volume "wordpress_dbdata"      Created                                                         0.0s
+ ✔ Container db                   Started                                                         0.6s
+ ✔ Container wordpress            Started                                                         0.7s
+ ✔ Container webserver            Started                                                         1.0s
+ki@ki:~/wordpress$ docker-compose ps
+WARN[0000] /home/ki/wordpress/docker-compose.yml: `version` is obsolete
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.45/containers/json?filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dwordpress%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+ki@ki:~/wordpress$ sudo -s
+root@ki:/home/ki/wordpress# docker-compose ps
+WARN[0000] /home/ki/wordpress/docker-compose.yml: `version` is obsolete
+NAME        IMAGE                               COMMAND                  SERVICE     CREATED         STATUS                          PORTS
+db          mysql:8.4                           "docker-entrypoint.s…"   db          7 minutes ago   Restarting (1) 56 seconds ago
+webserver   nginx:1.27.0-alpine                 "/docker-entrypoint.…"   webserver   7 minutes ago   Up 7 minutes                    0.0.0.0:80->80/tcp, :::80->80/tcp
+wordpress   wordpress:6.5.3-php8.1-fpm-alpine   "docker-entrypoint.s…"   wordpress   7 minutes ago   Up 7 minutes                    9000/tcp
+root@ki:/home/ki/wordpress# curl -L localhost
+<!DOCTYPE html>
+<html dir='ltr'>
+<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width">
+                        <title>Database Error</title>
+        <style type="text/css">
+                html {
+                        background: #f1f1f1;
+                }
+                body {
+                        background: #fff;
+                        border: 1px solid #ccd0d4;
+                        color: #444;
+                        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+                        margin: 2em auto;
+                        padding: 1em 2em;
+                        max-width: 700px;
+                        -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
+                        box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
+                }
+                h1 {
+                        border-bottom: 1px solid #dadada;
+                        clear: both;
+                        color: #666;
+                        font-size: 24px;
+                        margin: 30px 0 0 0;
+                        padding: 0;
+                        padding-bottom: 7px;
+                }
+                #error-page {
+                        margin-top: 50px;
+                }
+                #error-page p,
+                #error-page .wp-die-message {
+                        font-size: 14px;
+                        line-height: 1.5;
+                        margin: 25px 0 20px;
+                }
+                #error-page code {
+                        font-family: Consolas, Monaco, monospace;
+                }
+                ul li {
+                        margin-bottom: 10px;
+                        font-size: 14px ;
+                }
+                a {
+                        color: #2271b1;
+                }
+                a:hover,
+                a:active {
+                        color: #135e96;
+                }
+                a:focus {
+                        color: #043959;
+                        box-shadow: 0 0 0 2px #2271b1;
+                        outline: 2px solid transparent;
+                }
+                .button {
+                        background: #f3f5f6;
+                        border: 1px solid #016087;
+                        color: #016087;
+                        display: inline-block;
+                        text-decoration: none;
+                        font-size: 13px;
+                        line-height: 2;
+                        height: 28px;
+                        margin: 0;
+                        padding: 0 10px 1px;
+                        cursor: pointer;
+                        -webkit-border-radius: 3px;
+                        -webkit-appearance: none;
+                        border-radius: 3px;
+                        white-space: nowrap;
+                        -webkit-box-sizing: border-box;
+                        -moz-box-sizing:    border-box;
+                        box-sizing:         border-box;
+
+                        vertical-align: top;
+                }
+
+                .button.button-large {
+                        line-height: 2.30769231;
+                        min-height: 32px;
+                        padding: 0 12px;
+                }
+
+                .button:hover,
+                .button:focus {
+                        background: #f1f1f1;
+                }
+
+                .button:focus {
+                        background: #f3f5f6;
+                        border-color: #007cba;
+                        -webkit-box-shadow: 0 0 0 1px #007cba;
+                        box-shadow: 0 0 0 1px #007cba;
+                        color: #016087;
+                        outline: 2px solid transparent;
+                        outline-offset: 0;
+                }
+
+                .button:active {
+                        background: #f3f5f6;
+                        border-color: #7e8993;
+                        -webkit-box-shadow: none;
+                        box-shadow: none;
+                }
+
+                        </style>
+</head>
+<body id="error-page">
+        <div class="wp-die-message"><h1>Error establishing a database connection</h1></div></body>
+</html>
+        root@ki:/home/ki/wordocker network create some-network-network
+7dc32fa2a62c2570055b6658951b1a60ab351bcd972749672a380e1e59dab29c
+root@ki:/home/ki/wordpress# docker run --rm --network some-network --name some-mariadb -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mariadb:10.8
+Unable to find image 'mariadb:10.8' locally
+10.8: Pulling from library/mariadb
+d1669123f281: Pull complete
+7942299fe584: Pull complete
+ca116927bbe1: Pull complete
+9c0f0b5293ed: Pull complete
+ee0988afd61a: Pull complete
+82d81fccd49d: Pull complete
+7e361405ea73: Pull complete
+be365127aa3f: Pull complete
+Digest: sha256:456709ab146585d6189da05669b84384518baecd83670c9e5221f8c20a47cf1e
+Status: Downloaded newer image for mariadb:10.8
+37842503422c33bcb8f4fc14aa8e9225841e0a80351ced7414c0eda38d674117
+root@ki:/home/ki/wordpress# docker run --name myadmin -d --network some-network --link some-mariadb:db -p 8082:80 phpmyadmin
+Unable to find image 'phpmyadmin:latest' locally
+latest: Pulling from library/phpmyadmin
+09f376ebb190: Pull complete
+76afcdc86551: Pull complete
+ceed4541c527: Pull complete
+9ec84be954b0: Pull complete
+ff0e278869f9: Pull complete
+1693466e4cc6: Pull complete
+57c8d94a4882: Pull complete
+43af3fe8136a: Pull complete
+ddef75e08a5d: Pull complete
+a4ba0bdbbf0a: Pull complete
+29e89bc69515: Pull complete
+bdad27815722: Pull complete
+dbbbc9a88332: Pull complete
+dbb7df25a76e: Pull complete
+2cedf1ee513b: Pull complete
+b29f15d25d61: Pull complete
+0c455ba0c479: Pull complete
+87f4d138451a: Pull complete
+Digest: sha256:07fd21913ecb7cc08e9b731a2a623e421fee5210de1f24fe2a58b77e8cc32427
+Status: Downloaded newer image for phpmyadmin:latest
+f808164d9f2e9c2fc897ba7b2f1bbc789e8f0d31684b0a0b6413a629fe4b3c66
+root@ki:/home/ki/wordpress# docker ps
+CONTAINER ID   IMAGE                               COMMAND                  CREATED              STATUS
+       PORTS                                   NAMES
+f808164d9f2e   phpmyadmin                          "/docker-entrypoint.…"   7 seconds ago        Up 6 seconds
+       0.0.0.0:8082->80/tcp, :::8082->80/tcp   myadmin
+37842503422c   mariadb:10.8                        "docker-entrypoint.s…"   About a minute ago   Up About a minute               3306/tcp                                some-mariadb
+1e6c0ad14517   nginx:1.27.0-alpine                 "/docker-entrypoint.…"   15 minutes ago       Up 15 minutes
+root@ki:/home/ki/wordpress#
+1e618f65d7bc   wordpress:6.5.3-php8.1-fpm-alpine   "docker-entrypoint.s…"   15 minutes ago       Up 15 minutes
+root@ki:/home/ki/wordpress#
+root@ki:/home/ki/wordpress#
+root@ki:/home/ki/wordpress#
+

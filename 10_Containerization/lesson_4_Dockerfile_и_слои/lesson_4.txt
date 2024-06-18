@@ -1,0 +1,132 @@
+Урок 4. Dockerfile и слои (https://gb.ru/lessons/443732)
+
+apt install cowsay
+
+/usr/games/cowsay "Hi"
+ ____
+< Hi >
+ ----
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\
+                ||----w |
+                ||     ||
+
+echo 'FROM ubuntu:24.04
+RUN apt update
+RUN apt install -y cowsay
+RUN ln -s /usr/games/cowsay /usr/bin/cowsay
+CMD ["cowsay"]' > Dockerfile
+
+
+cat Dockerfile
+FROM ubuntu:24.04
+RUN apt update
+RUN apt install -y cowsay
+RUN ln -s /usr/games/cowsay /usr/bin/cowsay
+CMD ["cowsay"]
+
+
+docker build -t cowsaytest .
+[+] Building 19.8s (8/8) FINISHED                                                      docker:default
+ => [internal] load build definition from Dockerfile                                             0.0s
+ => => transferring dockerfile: 155B                                                             0.0s
+ => [internal] load metadata for docker.io/library/ubuntu:24.04                                  3.8s
+ => [internal] load .dockerignore                                                                0.0s
+ => => transferring context: 2B                                                                  0.0s
+ => [1/4] FROM docker.io/library/ubuntu:24.04@sha256:e3f92abc0967a6c19d0dfa2d55838833e947b9d74e  5.7s
+ => => resolve docker.io/library/ubuntu:24.04@sha256:e3f92abc0967a6c19d0dfa2d55838833e947b9d74e  0.0s
+ => => sha256:c279a739b31ead4ebc3e9ce04937eb8b612799b52c26133eb3b4a056d08c31a6 424B / 424B       0.0s
+ => => sha256:17c0145030df106e60e5d99149d69810db23b869ff0d3c9d236279a5a7bbb6b3 2.29kB / 2.29kB   0.0s
+ => => sha256:00d679a470c495ef7d52e70bcd7a008f4983530b67653e63e9d3cd27fade63d 28.87MB / 28.87MB  5.0s
+ => => sha256:e3f92abc0967a6c19d0dfa2d55838833e947b9d74edbcb0113e48535ad4be12a 1.13kB / 1.13kB   0.0s
+ => => extracting sha256:00d679a470c495ef7d52e70bcd7a008f4983530b67653e63e9d3cd27fade63d7        0.6s
+ => [2/4] RUN apt update                                                                         6.2s
+ => [3/4] RUN apt install -y cowsay                                                              3.8s
+ => [4/4] RUN ln -s /usr/games/cowsay /usr/bin/cowsay                                            0.1s
+ => exporting to image                                                                           0.1s
+ => => exporting layers                                                                          0.1s
+ => => writing image sha256:d96de9adb34691a80ec5d06c9c02909aab0b982585cc4bf262a37bdfe21f337b     0.0s
+ => => naming to docker.io/library/cowsaytest                                                    0.0s
+
+
+docker run -it cowsaytest bash
+root@ee96838ae724:/# ps -aux
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.0   4588  3840 pts/0    Ss   17:59   0:00 bash
+root           9  0.0  0.1   7888  3968 pts/0    R+   18:00   0:00 ps -aux
+
+cowsay "Hi"
+ ____
+< Hi >
+ ----
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\
+                ||----w |
+                ||     ||
+
+exit
+
+docker run cowsaytest cowsay "Hi Kostia"
+ ___________
+< Hi Kostia >
+ -----------
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\
+                ||----w |
+                ||     ||
+
+docker images
+REPOSITORY   TAG       IMAGE ID       CREATED         SIZE
+cowsaytest   latest    d96de9adb346   5 minutes ago   165MB
+
+echo 'FROM ubuntu:24.04
+RUN apt update && \
+    apt install -y cowsay && \
+    ln -s /usr/games/cowsay /usr/bin/cowsay
+RUN rm -rf /var/lib/apt/lists/*
+CMD ["cowsay"]' > Dockerfile
+
+docker build -t cowsaytest .
+
+docker images
+REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+cowsaytest   latest    a8b34625ca5c   15 seconds ago   165MB
+<none>       <none>    d96de9adb346   11 minutes ago   165MB
+
+echo 'FROM ubuntu:24.04
+RUN apt update && \
+    apt install -y cowsay && \
+    ln -s /usr/games/cowsay /usr/bin/cowsay && \
+    rm -rf /var/lib/apt/lists/*
+CMD ["cowsay"]' > Dockerfile
+
+docker build -t cowsaytest .
+
+docker images
+REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+cowsaytest   latest    2a1979ae0d1e   37 seconds ago   128MB
+<none>       <none>    a8b34625ca5c   2 minutes ago    165MB
+<none>       <none>    d96de9adb346   13 minutes ago   165MB
+
+
+
+echo 'FROM alpine
+RUN apk update && apk add cowsay \
+    --update-cache \
+    --repository https://alpine.global.ssl.fastly.net/alpine/edge/community \
+    --repository https://alpine.global.ssl.fastly.net/alpine/edge/main \
+    --repository https://dl-3.alpinelinux.org/alpine/edge/testing && \
+    rm -rf /var/cache/apk/*
+CMD ["cowsay"]' > Dockerfile
+
+docker build -t cowsaytest .
+
+docker images
+REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+cowsaytest   latest    0ae8a1ec08e5   45 seconds ago   46MB
+<none>       <none>    2a1979ae0d1e   17 minutes ago   128MB
+<none>       <none>    a8b34625ca5c   19 minutes ago   165MB
+<none>       <none>    d96de9adb346   30 minutes ago   165MB
