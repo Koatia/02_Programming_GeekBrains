@@ -1,0 +1,562 @@
+# Урок 1. Механизм пространства имен (https://gb.ru/lessons/443729)
+
+
+ki@192.168.1.66's password:
+Welcome to Ubuntu 24.04 LTS (GNU/Linux 6.8.0-31-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Sun Jun  2 11:57:29 AM UTC 2024
+
+  System load:  0.24               Processes:               238
+  Usage of /:   24.5% of 11.21GB   Users logged in:         0
+  Memory usage: 4%                 IPv4 address for enp0s3: 192.168.1.66
+  Swap usage:   0%
+
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+
+
+Last login: Sat Jun  1 07:39:09 2024 from 192.168.1.98
+ki@ki:~$ sudo -s
+[sudo] password for ki:
+
+root@ki:/home/ki# mkdir gb
+root@ki:/home/ki# chroot gb /bin/bash
+chroot: failed to run command ‘/bin/bash’: No such file or directory
+
+root@ki:/home/ki# mkdir gb/bin
+root@ki:/home/ki# cp /bin/bash gb/bin
+root@ki:/home/ki# chroot gb
+chroot: failed to run command ‘/bin/bash’: No such file or directory
+
+root@ki:/home/ki# ldd /bin/bash
+        linux-vdso.so.1 (0x00007ffc10dcf000)
+        libtinfo.so.6 => /lib/x86_64-linux-gnu/libtinfo.so.6 (0x00007b2434f53000)
+        libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007b2434c00000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007b24350fb000)
+
+root@ki:/home/ki# mkdir gb/lib
+root@ki:/home/ki# mkdir gb/lib64
+root@ki:/home/ki# cp /lib/x86_64-linux-gnu/libtinfo.so.6 gb/lib/
+root@ki:/home/ki# cp /lib/x86_64-linux-gnu/libc.so.6 gb/lib/
+root@ki:/home/ki# cp /lib64/ld-linux-x86-64.so.2 gb/lib64/
+root@ki:/home/ki# chroot gb
+bash-5.2#
+
+bash-5.2# ls
+bash: ls: command not found
+
+
+bash-5.2# exit
+exit
+root@ki:/home/ki#
+
+root@ki:/home/ki# cat /proc/sys/kernel/pid_max
+4194304
+
+root@ki:/home/ki# ps
+    PID TTY          TIME CMD
+   1855 pts/1    00:00:00 sudo
+   1856 pts/1    00:00:00 su
+   1857 pts/1    00:00:00 bash
+   1963 pts/1    00:00:00 ps
+root@ki:/home/ki# top
+top - 12:46:19 up 50 min,  1 user,  load average: 0.00, 0.00, 0.00
+Tasks: 214 total,   1 running, 213 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  0.0 us,  0.1 sy,  0.0 ni, 99.7 id,  0.0 wa,  0.0 hi,  0.1 si,  0.0 st
+MiB Mem :   7939.4 total,   6930.7 free,    558.5 used,    686.0 buff/cache
+MiB Swap:      0.0 total,      0.0 free,      0.0 used.   7380.9 avail Mem
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+    109 root      20   0       0      0      0 I   1.0   0.0   0:03.21 kworker/2:1-events
+    872 root      20   0 2021908  46588  32768 S   1.0   0.6   0:33.85 containerd
+   1460 root      20   0 1578272  44336  32000 S   1.0   0.5   0:25.80 containerd
+   1950 root      20   0       0      0      0 I   0.3   0.0   0:00.08 kworker/u25:1-flush-252:0
+      1 root      20   0   22168  12580   9124 S   0.0   0.2   0:01.48 systemd
+      2 root      20   0       0      0      0 S   0.0   0.0   0:00.02 kthreadd
+      3 root      20   0       0      0      0 S   0.0   0.0   0:00.00 pool_workqueue_release
+      4 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker/R-rcu_g
+      5 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker/R-rcu_p
+      6 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker/R-slub_
+      7 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker/R-netns
+      9 root      20   0       0      0      0 I   0.0   0.0   0:00.39 kworker/0:1-events
+     10 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker/0:0H-events_highpri
+     11 root      20   0       0      0      0 I   0.0   0.0   0:00.00 kworker/u20:0-ext4-rsv-conversion
+     12 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker/R-mm_pe
+     13 root      20   0       0      0      0 I   0.0   0.0   0:00.00 rcu_tasks_kthread
+     14 root      20   0       0      0      0 I   0.0   0.0   0:00.00 rcu_tasks_rude_kthread
+     15 root      20   0       0      0      0 I   0.0   0.0   0:00.00 rcu_tasks_trace_kthread
+
+
+root@ki:/home/ki# cat > example1.c
+#define _GNU_SOURCE
+#include <sched.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+static char child_stack[1048576];
+static int child_fn() {
+        printf("PID: %ld\n", (long)getpid());
+        return 0;
+}
+int main() {
+        pid_t child_pid = clone(child_fn, child_stack+1048576, CLONE_NEWPID | SIGCHLD, NULL);
+        printf("clone() = %ld\n", (long)child_pid);
+        waitpid(child_pid, NULL, 0);
+        return 0;
+}
+
+root@ki:/home/ki# gcc example1.c -o example1.sh
+root@ki:/home/ki# ./example1.sh
+clone() = 2579
+PID: 1
+
+root@ki:/home/ki# ps -aux
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.1  22168 12580 ?        Ss   11:55   0:01 /sbin/init
+root           2  0.0  0.0      0     0 ?        S    11:55   0:00 [kthreadd]
+root           3  0.0  0.0      0     0 ?        S    11:55   0:00 [pool_workqueue_release]
+root           4  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-rcu_g]
+root           5  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-rcu_p]
+root           6  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-slub_]
+root           7  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-netns]
+root           9  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/0:1-events]
+root          10  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/0:0H-events_highpri]
+root          11  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/u20:0-ext4-rsv-conversion]
+root          12  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-mm_pe]
+root          13  0.0  0.0      0     0 ?        I    11:55   0:00 [rcu_tasks_kthread]
+root          14  0.0  0.0      0     0 ?        I    11:55   0:00 [rcu_tasks_rude_kthread]
+root          15  0.0  0.0      0     0 ?        I    11:55   0:00 [rcu_tasks_trace_kthread]
+root          16  0.0  0.0      0     0 ?        S    11:55   0:00 [ksoftirqd/0]
+root          17  0.0  0.0      0     0 ?        I    11:55   0:00 [rcu_preempt]
+root          18  0.0  0.0      0     0 ?        S    11:55   0:00 [migration/0]
+root          19  0.0  0.0      0     0 ?        S    11:55   0:00 [idle_inject/0]
+root          20  0.0  0.0      0     0 ?        S    11:55   0:00 [cpuhp/0]
+root          21  0.0  0.0      0     0 ?        S    11:55   0:00 [cpuhp/1]
+root          22  0.0  0.0      0     0 ?        S    11:55   0:00 [idle_inject/1]
+root          23  0.0  0.0      0     0 ?        S    11:55   0:00 [migration/1]
+root          24  0.0  0.0      0     0 ?        S    11:55   0:00 [ksoftirqd/1]
+root          25  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/1:0-events]
+root          26  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/1:0H-events_highpri]
+root          27  0.0  0.0      0     0 ?        S    11:55   0:00 [cpuhp/2]
+root          28  0.0  0.0      0     0 ?        S    11:55   0:00 [idle_inject/2]
+root          29  0.0  0.0      0     0 ?        S    11:55   0:01 [migration/2]
+root          30  0.0  0.0      0     0 ?        S    11:55   0:00 [ksoftirqd/2]
+root          32  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/2:0H-events_highpri]
+root          33  0.0  0.0      0     0 ?        S    11:55   0:00 [cpuhp/3]
+root          34  0.0  0.0      0     0 ?        S    11:55   0:00 [idle_inject/3]
+root          35  0.0  0.0      0     0 ?        S    11:55   0:01 [migration/3]
+root          36  0.0  0.0      0     0 ?        S    11:55   0:00 [ksoftirqd/3]
+root          38  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/3:0H-kblockd]
+root          39  0.0  0.0      0     0 ?        S    11:55   0:00 [cpuhp/4]
+root          40  0.0  0.0      0     0 ?        S    11:55   0:00 [idle_inject/4]
+root          41  0.0  0.0      0     0 ?        S    11:55   0:01 [migration/4]
+root          42  0.0  0.0      0     0 ?        S    11:55   0:00 [ksoftirqd/4]
+root          44  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/4:0H-events_highpri]
+root          45  0.0  0.0      0     0 ?        S    11:55   0:00 [cpuhp/5]
+root          46  0.0  0.0      0     0 ?        S    11:55   0:00 [idle_inject/5]
+root          47  0.0  0.0      0     0 ?        S    11:55   0:01 [migration/5]
+root          48  0.0  0.0      0     0 ?        S    11:55   0:00 [ksoftirqd/5]
+root          49  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/5:0-events]
+root          50  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/5:0H-kblockd]
+root          51  0.0  0.0      0     0 ?        S    11:55   0:00 [cpuhp/6]
+root          52  0.0  0.0      0     0 ?        S    11:55   0:00 [idle_inject/6]
+root          53  0.0  0.0      0     0 ?        S    11:55   0:01 [migration/6]
+root          54  0.0  0.0      0     0 ?        S    11:55   0:00 [ksoftirqd/6]
+root          56  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/6:0H-events_highpri]
+root          57  0.0  0.0      0     0 ?        S    11:55   0:00 [cpuhp/7]
+root          58  0.0  0.0      0     0 ?        S    11:55   0:00 [idle_inject/7]
+root          59  0.0  0.0      0     0 ?        S    11:55   0:01 [migration/7]
+root          60  0.0  0.0      0     0 ?        S    11:55   0:00 [ksoftirqd/7]
+root          62  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/7:0H-events_highpri]
+root          63  0.0  0.0      0     0 ?        S    11:55   0:00 [cpuhp/8]
+root          64  0.0  0.0      0     0 ?        S    11:55   0:00 [idle_inject/8]
+root          65  0.0  0.0      0     0 ?        S    11:55   0:01 [migration/8]
+root          66  0.0  0.0      0     0 ?        S    11:55   0:00 [ksoftirqd/8]
+root          68  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/8:0H-kblockd]
+root          69  0.0  0.0      0     0 ?        S    11:55   0:00 [cpuhp/9]
+root          70  0.0  0.0      0     0 ?        S    11:55   0:00 [idle_inject/9]
+root          71  0.0  0.0      0     0 ?        S    11:55   0:01 [migration/9]
+root          72  0.0  0.0      0     0 ?        S    11:55   0:00 [ksoftirqd/9]
+root          74  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/9:0H-events_highpri]
+root          76  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/u22:0-events_power_efficient]
+root          80  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/u26:0-events_power_efficient]
+root          81  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/u27:0-events_power_efficient]
+root          82  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/u28:0-events_unbound]
+root          83  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/u29:0-events_unbound]
+root          84  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/u30:0-loop2]
+root          85  0.0  0.0      0     0 ?        S    11:55   0:00 [kdevtmpfs]
+root          86  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-inet_]
+root          88  0.0  0.0      0     0 ?        S    11:55   0:00 [kauditd]
+root          89  0.0  0.0      0     0 ?        S    11:55   0:00 [khungtaskd]
+root          90  0.0  0.0      0     0 ?        S    11:55   0:00 [oom_reaper]
+root          92  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-write]
+root          93  0.0  0.0      0     0 ?        S    11:55   0:00 [kcompactd0]
+root          94  0.0  0.0      0     0 ?        SN   11:55   0:00 [ksmd]
+root          95  0.0  0.0      0     0 ?        SN   11:55   0:00 [khugepaged]
+root          96  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-kinte]
+root          97  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-kbloc]
+root          98  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-blkcg]
+root          99  0.0  0.0      0     0 ?        S    11:55   0:00 [irq/9-acpi]
+root         100  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-tpm_d]
+root         101  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-ata_s]
+root         102  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-md]
+root         103  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-md_bi]
+root         104  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-edac-]
+root         105  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-devfr]
+root         106  0.0  0.0      0     0 ?        S    11:55   0:00 [watchdogd]
+root         108  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/0:1H-kblockd]
+root         109  0.0  0.0      0     0 ?        I    11:55   0:03 [kworker/2:1-cgroup_destroy]
+root         110  0.0  0.0      0     0 ?        S    11:55   0:00 [kswapd0]
+root         111  0.0  0.0      0     0 ?        S    11:55   0:00 [ecryptfs-kthread]
+root         112  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-kthro]
+root         113  0.1  0.0      0     0 ?        R    11:55   0:06 [kworker/3:1-mm_percpu_wq]
+root         114  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-acpi_]
+root         116  0.0  0.0      0     0 ?        S    11:55   0:00 [scsi_eh_0]
+root         117  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-scsi_]
+root         118  0.0  0.0      0     0 ?        S    11:55   0:00 [scsi_eh_1]
+root         119  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-scsi_]
+root         122  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/7:1-events]
+root         125  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-mld]
+root         126  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-ipv6_]
+root         132  0.1  0.0      0     0 ?        I    11:55   0:08 [kworker/5:2-events]
+root         137  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/5:1H-kblockd]
+root         139  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-kstrp]
+root         143  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/u31:0]
+root         144  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/u32:0]
+root         145  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/u33:0]
+root         146  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/u34:0]
+root         147  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/u35:0]
+root         148  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/u36:0]
+root         149  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/u37:0]
+root         150  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/u38:0]
+root         151  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/u39:0]
+root         152  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/u40:0]
+root         153  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/u41:0]
+root         157  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/u30:1-events_unbound]
+root         159  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-crypt]
+root         160  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/u22:1-events_power_efficient]
+root         171  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-charg]
+root         196  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/8:1H-kblockd]
+root         201  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/7:1H-kblockd]
+root         231  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/9:1H-kblockd]
+root         232  0.1  0.0      0     0 ?        I    11:55   0:04 [kworker/9:1-events]
+root         233  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/6:1H-kblockd]
+root         234  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/4:1H-kblockd]
+root         235  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/2:1H-kblockd]
+root         239  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/1:1H-kblockd]
+root         244  0.0  0.0      0     0 ?        S    11:55   0:00 [scsi_eh_2]
+root         245  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-scsi_]
+root         281  0.1  0.0      0     0 ?        I    11:55   0:04 [kworker/8:2-events]
+root         283  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-kdmfl]
+root         294  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/u23:2-events_power_efficient]
+root         297  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/u22:2-events_power_efficient]
+root         313  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/9:2-events]
+root         316  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-raid5]
+root         355  0.0  0.0      0     0 ?        S    11:55   0:00 [jbd2/dm-0-8]
+root         356  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-ext4-]
+root         422  0.0  0.0      0     0 ?        S    11:55   0:00 [psimon]
+root         439  0.0  0.2  66832 16904 ?        Ss   11:55   0:00 /usr/lib/systemd/systemd-journald
+root         447  0.0  0.0      0     0 ?        I    11:55   0:02 [kworker/6:2-events]
+root         453  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-kmpat]
+root         454  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-kmpat]
+root         455  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/2:2-mm_percpu_wq]
+root         462  0.0  0.3 289112 27264 ?        SLsl 11:55   0:01 /sbin/multipathd -d -s
+root         492  0.0  0.0  29168  7936 ?        Ss   11:55   0:00 /usr/lib/systemd/systemd-udevd
+root         494  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/u20:1]
+root         505  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/u26:2-events_power_efficient]
+root         512  0.0  0.0      0     0 ?        S    11:55   0:00 [psimon]
+root         562  0.0  0.0      0     0 ?        I    11:55   0:00 [kworker/u30:2-events_unbound]
+root         583  0.0  0.0      0     0 ?        I    11:55   0:02 [kworker/7:2-mm_percpu_wq]
+root         590  0.0  0.0      0     0 ?        S    11:55   0:00 [irq/18-vmwgfx]
+root         591  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-ttm]
+root         666  0.0  0.0      0     0 ?        S    11:55   0:00 [jbd2/sda2-8]
+root         667  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-ext4-]
+systemd+     693  0.0  0.1  18996  9472 ?        Ss   11:55   0:00 /usr/lib/systemd/systemd-networkd
+systemd+     786  0.0  0.1  21576 12800 ?        Ss   11:55   0:00 /usr/lib/systemd/systemd-resolved
+systemd+     799  0.0  0.0  91020  7680 ?        Ssl  11:55   0:00 /usr/lib/systemd/systemd-timesyncd
+root         813  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/R-cfg80]
+root         840  0.0  0.1  17988  8704 ?        S<s  11:55   0:00 /usr/lib/systemd/systemd-logind
+message+     842  0.0  0.0   9880  5120 ?        Ss   11:55   0:00 @dbus-daemon --system --address=systemd:
+polkitd      853  0.0  0.0 308160  7680 ?        Ssl  11:55   0:00 /usr/lib/polkit-1/polkitd --no-debug
+root         864  0.0  0.3 1837824 31200 ?       Ssl  11:55   0:02 /usr/lib/snapd/snapd
+root         867  0.0  0.1 468984 12800 ?        Ssl  11:55   0:00 /usr/libexec/udisks2/udisksd
+root         872  1.1  0.5 2021908 46716 ?       Ssl  11:55   0:45 /usr/bin/containerd
+root         882  0.0  0.2 109664 22656 ?        Ssl  11:55   0:00 /usr/bin/python3 /usr/share/unattended-up
+syslog       917  0.0  0.0 222508  6016 ?        Ssl  11:55   0:00 /usr/sbin/rsyslogd -n -iNONE
+root         953  0.0  0.1 318296 12160 ?        Ssl  11:55   0:00 /usr/sbin/ModemManager
+root         978  0.0  0.0      0     0 ?        I<   11:55   0:00 [kworker/3:2H-kblockd]
+root        1024  0.0  0.9 2126368 74820 ?       Ssl  11:55   0:01 /usr/bin/dockerd -H fd:// --containerd=/r
+root        1027  0.0  0.0   6824  2688 ?        Ss   11:55   0:00 /usr/sbin/cron -f -P
+root        1038  0.0  0.0      0     0 ?        I    11:55   0:02 [kworker/4:2-events]
+root        1049  0.0  0.0   6104  1920 tty1     Ss+  11:55   0:00 /sbin/agetty -o -p -- \u --noclear - linu
+root        1313  0.0  0.9 1838460 76240 ?       Ssl  11:55   0:02 dockerd --group docker --exec-root=/run/s
+root        1460  0.8  0.5 1578272 44336 ?       Ssl  11:55   0:34 containerd --config /run/snap.docker/cont
+root        1610  0.0  0.0      0     0 ?        I    11:56   0:00 [kworker/3:3-events]
+root        1616  0.0  0.0  12020  7808 ?        Ss   11:57   0:00 sshd: /usr/sbin/sshd -D [listener] 0 of 1
+root        1617  0.0  0.1  14964  8180 ?        Ss   11:57   0:00 sshd: ki [priv]
+ki          1621  0.0  0.1  20348 11392 ?        Ss   11:57   0:00 /usr/lib/systemd/systemd --user
+ki          1622  0.0  0.0  21148  3520 ?        S    11:57   0:00 (sd-pam)
+ki          1731  0.0  0.0  15124  6852 ?        S    11:57   0:01 sshd: ki@pts/0
+ki          1732  0.0  0.0   8648  5504 pts/0    Ss   11:57   0:00 -bash
+root        1775  0.0  0.0      0     0 ?        I<   11:57   0:00 [kworker/R-tls-s]
+root        1798  0.0  0.1 314004  8832 ?        Ssl  12:01   0:00 /usr/libexec/upowerd
+root        1841  0.0  0.0      0     0 ?        I    12:06   0:00 [kworker/u24:2-events_unbound]
+root        1845  0.1  0.0      0     0 ?        I    12:06   0:03 [kworker/1:2-events]
+root        1853  0.0  0.0      0     0 ?        I    12:11   0:00 [kworker/u29:1-events_unbound]
+root        1854  0.0  0.0  16764  7296 pts/0    S+   12:11   0:00 sudo su
+root        1855  0.0  0.0  16764  2512 pts/1    Ss   12:11   0:00 sudo su
+root        1856  0.0  0.0   9376  4352 pts/1    S    12:11   0:00 su
+root        1857  0.0  0.0   7604  4224 pts/1    S    12:11   0:00 bash
+root        1899  0.0  0.0      0     0 ?        I    12:20   0:00 [kworker/8:0]
+root        1914  0.0  0.0      0     0 ?        I    12:25   0:00 [kworker/u26:3-events_power_efficient]
+root        1934  0.0  0.0      0     0 ?        I    12:30   0:01 [kworker/6:0-events]
+root        1935  0.0  0.0      0     0 ?        I    12:30   0:00 [kworker/u25:0-events_power_efficient]
+root        1936  0.0  0.0      0     0 ?        I    12:30   0:00 [kworker/u23:1-events_power_efficient]
+root        1949  0.0  0.0      0     0 ?        I    12:38   0:00 [kworker/u23:3-events_unbound]
+root        1950  0.0  0.0      0     0 ?        I    12:38   0:00 [kworker/u25:1-events_unbound]
+root        1953  0.0  0.0      0     0 ?        I    12:40   0:00 [kworker/4:0-events]
+root        1954  0.0  0.0      0     0 ?        I    12:40   0:00 [kworker/u24:3-events_power_efficient]
+root        1955  0.0  0.0      0     0 ?        I    12:42   0:00 [kworker/u28:2-events_power_efficient]
+root        1956  0.0  0.0      0     0 ?        I    12:42   0:00 [kworker/u21:0-events_power_efficient]
+root        1971  0.0  0.0      0     0 ?        I    12:51   0:00 [kworker/u21:2-events_unbound]
+root        2101  0.0  0.0      0     0 ?        I    12:51   0:00 [kworker/0:0-cgroup_destroy]
+root        2102  0.0  0.0      0     0 ?        I    12:51   0:00 [kworker/u27:2-events_power_efficient]
+root        2103  0.0  0.0      0     0 ?        I    12:53   0:00 [kworker/u28:1-events_power_efficient]
+root        2104  0.0  0.0      0     0 ?        I    12:53   0:00 [kworker/u29:2-events_unbound]
+root        2113  0.0  0.0      0     0 ?        I    12:57   0:00 [kworker/u24:1-flush-252:0]
+root        2116  0.0  0.0      0     0 ?        I    12:58   0:00 [kworker/u25:3-events_power_efficient]
+root        2118  0.0  0.0      0     0 ?        I    12:59   0:00 [kworker/u27:1-events_power_efficient]
+root        2185  0.0  0.0      0     0 ?        I    13:00   0:00 [kworker/0:2-events]
+root        2520  0.0  0.2 372632 20736 ?        Ssl  13:00   0:00 /usr/libexec/packagekitd
+root        2577  0.0  0.0      0     0 ?        I    13:00   0:00 [kworker/u26:1-events_unbound]
+root        2582  0.0  0.0  12316  5376 pts/1    R+   13:04   0:00 ps -aux
+
+
+root@ki:/home/ki# cat > example2.c
+#define _GNU_SOURCE
+#include <sched.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+static char child_stack[1048576];
+static int child_fn() {
+        printf("Parent PID: %ld\n", (long)getppid());
+        return 0;
+}
+int main() {
+        pid_t child_pid = clone(child_fn, child_stack+1048576, CLONE_NEWPID | SIGCHLD, NULL);
+        printf("clone() = %ld\n", (long)child_pid);
+        waitpid(child_pid, NULL, 0);
+        return 0;
+}
+
+
+root@ki:/home/ki# gcc example2.c -o example2.sh
+root@ki:/home/ki# ./example2.sh
+clone() = 2600
+Parent PID: 0
+
+root@ki:/home/ki# cat > example3.c
+#define _GNU_SOURCE
+#include <sched.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+static char child_stack[1048576];
+static int child_fn() {
+        printf("Parent PID: %ld\n", (long)getppid());
+        return 0;
+}
+int main() {
+        pid_t child_pid = clone(child_fn, child_stack+1048576, SIGCHLD, NULL);
+        printf("clone() = %ld\n", (long)child_pid);
+        waitpid(child_pid, NULL, 0);
+        return 0;
+}
+
+root@ki:/home/ki#
+root@ki:/home/ki# gcc example3.c -o example3.sh
+root@ki:/home/ki# ./example3.sh
+clone() = 2634
+Parent PID: 2633
+
+root@ki:/home/ki# cat > example4.c
+#define _GNU_SOURCE
+#include <sched.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <unistd.h>
+static char child_stack[1048576];
+static int child_fn() {
+        printf("New `net` Namespace:\n");
+        system("ip link");
+        printf("\n\n");
+        return 0;
+}
+int main() {
+        printf("Original `net` Namespace:\n");
+        system("ip link");
+        printf("\n\n");
+
+        pid_t child_pid = clone(child_fn, child_stack+1048576, CLONE_NEWPID | CLONE_NEWNET | SIGCHLD, NULL);
+        waitpid(child_pid, NULL, 0);
+        return 0;
+}
+
+
+
+root@ki:/home/ki# gcc example4.c -o example4.sh
+root@ki:/home/ki# ./example4.sh
+Original `net` Namespace:
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: enp0s3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000
+    link/ether 08:00:27:6e:6f:61 brd ff:ff:ff:ff:ff:ff
+3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN mode DEFAULT group default
+
+    link/ether 02:42:ed:5f:cd:12 brd ff:ff:ff:ff:ff:ff
+
+
+New `net` Namespace:
+1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+
+
+
+root@ki:/home/ki# strace ./example4.sh
+execve("./example4.sh", ["./example4.sh"], 0x7ffc350ee660 /* 19 vars */) = 0
+brk(NULL)                               = 0x5c7b327a2000
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x728165b52000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=23479, ...}) = 0
+mmap(NULL, 23479, PROT_READ, MAP_PRIVATE, 3, 0) = 0x728165b4c000
+close(3)                                = 0
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\220\243\2\0\0\0\0\0"..., 832) = 832
+pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+fstat(3, {st_mode=S_IFREG|0755, st_size=2125328, ...}) = 0
+pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+mmap(NULL, 2170256, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x728165800000
+mmap(0x728165828000, 1605632, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x28000) = 0x728165828000
+mmap(0x7281659b0000, 323584, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1b0000) = 0x7281659b0000
+mmap(0x7281659ff000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1fe000) = 0x7281659ff000
+mmap(0x728165a05000, 52624, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x728165a05000
+close(3)                                = 0
+mmap(NULL, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x728165b49000
+arch_prctl(ARCH_SET_FS, 0x728165b49740) = 0
+set_tid_address(0x728165b49a10)         = 2681
+set_robust_list(0x728165b49a20, 24)     = 0
+rseq(0x728165b4a060, 0x20, 0, 0x53053053) = 0
+mprotect(0x7281659ff000, 16384, PROT_READ) = 0
+mprotect(0x5c7b324b8000, 4096, PROT_READ) = 0
+mprotect(0x728165b8a000, 8192, PROT_READ) = 0
+prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+munmap(0x728165b4c000, 23479)           = 0
+fstat(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(0x88, 0x1), ...}) = 0
+getrandom("\x40\xcc\x08\xe3\xe4\x90\x20\x09", 8, GRND_NONBLOCK) = 8
+brk(NULL)                               = 0x5c7b327a2000
+brk(0x5c7b327c3000)                     = 0x5c7b327c3000
+write(1, "Original `net` Namespace:\n", 26Original `net` Namespace:
+) = 26
+rt_sigaction(SIGINT, {sa_handler=SIG_IGN, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x728165845320}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGQUIT, {sa_handler=SIG_IGN, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x728165845320}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+mmap(NULL, 36864, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0x728165b40000
+rt_sigprocmask(SIG_BLOCK, ~[], [CHLD], 8) = 0
+clone3({flags=CLONE_VM|CLONE_VFORK|CLONE_CLEAR_SIGHAND, exit_signal=SIGCHLD, stack=0x728165b40000, stack_size=0x9000}, 88) = 2682
+munmap(0x728165b40000, 36864)           = 0
+rt_sigprocmask(SIG_SETMASK, [CHLD], NULL, 8) = 0
+wait4(2682, 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: enp0s3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000
+    link/ether 08:00:27:6e:6f:61 brd ff:ff:ff:ff:ff:ff
+3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN mode DEFAULT group default
+
+    link/ether 02:42:ed:5f:cd:12 brd ff:ff:ff:ff:ff:ff
+[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 2682
+rt_sigaction(SIGINT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x728165845320}, NULL, 8) = 0
+rt_sigaction(SIGQUIT, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x728165845320}, NULL, 8) = 0
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=2682, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+write(1, "\n", 1
+)                       = 1
+write(1, "\n", 1
+)                       = 1
+clone(child_stack=0x5c7b325b9030, flags=CLONE_NEWPID|CLONE_NEWNET|SIGCHLD) = 2684
+New `net` Namespace:
+wait4(2684, 1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+
+
+NULL, 0, NULL)              = 2684
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=2684, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+exit_group(0)                           = ?
++++ exited with 0 +++
+
+
+
+root@ki:/home/ki# uname -a
+Linux ki 6.8.0-31-generic #31-Ubuntu SMP PREEMPT_DYNAMIC Sat Apr 20 00:40:06 UTC 2024 x86_64 x86_64 x86_64 GNU/Linux
+
+
+root@ki:/home/ki# cat > example5.c
+#define _GNU_SOURCE
+#include <sched.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/utsname.h>
+#include <sys/wait.h>
+#include <unistd.h>
+static char child_stack[1048576];
+static void print_nodename() {
+        struct utsname utsname;
+        uname(&utsname);
+        printf("%s\n", utsname.nodename);
+}
+static int child_fn() {
+        printf("New UTS namespace nodename: ");
+        print_nodename();
+        printf("Changing nodename inside new UTS namespace\n");
+        sethostname("GeekBrains", 6);
+        printf("New UTS namespace nodename: ");
+        print_nodename();
+        return 0;
+}
+int main() {
+        printf("Original UTS namespace nodename: ");
+        print_nodename();
+        pid_t child_pid = clone(child_fn, child_stack+1048576, CLONE_NEWUTS | SIGCHLD, NULL);
+        sleep(1);
+        printf("Original UTS namespace nodename: ");
+        print_nodename();
+        waitpid(child_pid, NULL, 0);
+        return 0;
+}
+
+
+root@ki:/home/ki# gcc example5.c -o example5.sh
+root@ki:/home/ki# ./example5.sh
+Original UTS namespace nodename: ki
+New UTS namespace nodename: ki
+Changing nodename inside new UTS namespace
+New UTS namespace nodename: GeekBr
+Original UTS namespace nodename: ki
+
+

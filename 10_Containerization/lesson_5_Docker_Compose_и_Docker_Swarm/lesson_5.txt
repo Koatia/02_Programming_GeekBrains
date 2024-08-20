@@ -1,0 +1,682 @@
+Урок 5. Docker Compose и Docker Swarm (https://gb.ru/lessons/443733)
+
+
+# You can download Docker Compose binaries from the release page on this repository:
+# https://github.com/docker/compose/releases
+
+# To download and install Compose standalone, run:
+curl -SL https://github.com/docker/compose/releases/download/v2.27.1/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+
+# Test and execute compose commands using
+docker-compose.
+
+# If the command docker-compose fails after installation, check your path. You can also create a symbolic link to /usr/bin or any other directory in your path. For example:
+
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+
+# пример запуска проекта, состоящего из двух контейнеров
+docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=test123 -d mysql:8.3
+
+
+Unable to find image 'mysql:8.3' locally
+8.3: Pulling from library/mysql
+bd37f6d99203: Pull complete
+e733cb057651: Pull complete
+af2fd35011dc: Pull complete
+e5233d0f6ee3: Pull complete
+cf11fd8658d3: Pull complete
+85344d57c3cb: Pull complete
+0eebca71f40d: Pull complete
+18e468a1ddac: Pull complete
+d9b2b8d35c75: Pull complete
+57ba1b7684b4: Pull complete
+Digest: sha256:9de9d54fecee6253130e65154b930978b1fcc336bcc86dfd06e89b72a2588ebe
+Status: Downloaded newer image for mysql:8.3
+a7b33afc1911ab4ee68e2bc26f56574e2272ea2795467db4f3de3ef39eff492e
+
+
+docker ps
+CONTAINER ID   IMAGE       COMMAND                  CREATED          STATUS          PORTS     NAMES
+a7b33afc1911   mysql:8.3   "docker-entrypoint.s…"   20 seconds ago   Up 18 seconds   3306/tcp, 33060/tcp   some-mysql
+
+
+docker run --name myphp -d --link some-mysql:db -p 8081:80 phpmyadmin/phpmyadmin
+Unable to find image 'phpmyadmin/phpmyadmin:latest' locally
+latest: Pulling from phpmyadmin/phpmyadmin
+faef57eae888: Pull complete
+989a1d6c052e: Pull complete
+0705c9c2f22d: Pull complete
+621478e043ce: Pull complete
+98246dcca987: Pull complete
+bfed8c155cb6: Pull complete
+7a7c2e908867: Pull complete
+d176994b625c: Pull complete
+2d8ace6a2716: Pull complete
+c70df516383c: Pull complete
+15e1b44fe4c7: Pull complete
+65e50d44e95a: Pull complete
+77f68910bc0a: Pull complete
+605dd3a6e332: Pull complete
+99ce27188f07: Pull complete
+74d64e32c5d5: Pull complete
+ef5fc9928b9f: Pull complete
+163f3256e112: Pull complete
+Digest: sha256:67ba2550fd004399ab0b95b64021a88ea544011e566a9a1995180a3decb6410d
+Status: Downloaded newer image for phpmyadmin/phpmyadmin:latest
+36c56611665d66b09aef40d94d98370a39fbffa0151d84490cbccbc6cb887850
+
+
+docker ps
+CONTAINER ID   IMAGE                   COMMAND                  CREATED          STATUS          PORTS                                   NAMES
+36c56611665d   phpmyadmin/phpmyadmin   "/docker-entrypoint.…"   47 minutes ago   Up 47 minutes   0.0.0.0:8081->80/tcp, :::8081->80/tcp   myphp
+a7b33afc1911   mysql:8.3               "docker-entrypoint.s…"   53 minutes ago   Up 53 minutes   3306/tcp, 33060/tcp                     some-mysql
+
+
+echo "version: '3.9'
+
+services:
+
+  db:
+    image: mariadb:10.10.2
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+
+  adminer:
+    image: adminer:4.8.1
+    restart: always
+    ports:
+      - 6080:8080" > compose.yaml
+
+
+docker-compose up -d
+WARN[0000] /home/ki/compose.yaml: `version` is obsolete
+[+] Running 2/2
+ ✔ Container ki-db-1       Started                                                                0.2s
+ ✔ Container ki-adminer-1  Started
+
+
+docker ps
+CONTAINER ID   IMAGE                   COMMAND                  CREATED         STATUS          PORTS                                       NAMES
+a88bf348deef   mariadb:10.10.2         "docker-entrypoint.s…"   4 minutes ago   Up 36 seconds   3306/tcp                                    ki-db-1
+411f0023c449   adminer:4.8.1           "entrypoint.sh php -…"   4 minutes ago   Up 36 seconds   0.0.0.0:6080->8080/tcp, :::6080->8080/tcp   ki-adminer-1
+36c56611665d   phpmyadmin/phpmyadmin   "/docker-entrypoint.…"   2 hours ago     Up 2 hours      0.0.0.0:8081->80/tcp, :::8081->80/tcp       myphp
+a7b33afc1911   mysql:8.3               "docker-entrypoint.s…"   2 hours ago     Up 2 hours      3306/tcp, 33060/tcp                         some-mysql
+
+
+docker container inspect ki-adminer-1
+[
+    {
+        "Id": "411f0023c449089ca37b41d34b50258c48b8bba08932d6a6675599bb41e05245",
+        "Created": "2024-06-14T17:40:06.999434305Z",
+        "Path": "entrypoint.sh",
+        "Args": [
+            "php",
+            "-S",
+            "[::]:8080",
+            "-t",
+            "/var/www/html"
+        ],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 3937,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2024-06-14T17:43:36.382291529Z",
+            "FinishedAt": "2024-06-14T17:43:27.734019399Z"
+        },
+        "Image": "sha256:c59cbdd3c9210d0e6596a8dc12d83cbfbeabc19e361ed137c370af126e1527c5",
+        "ResolvConfPath": "/var/lib/docker/containers/411f0023c449089ca37b41d34b50258c48b8bba08932d6a6675599bb41e05245/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/411f0023c449089ca37b41d34b50258c48b8bba08932d6a6675599bb41e05245/hostname",
+        "HostsPath": "/var/lib/docker/containers/411f0023c449089ca37b41d34b50258c48b8bba08932d6a6675599bb41e05245/hosts",
+        "LogPath": "/var/lib/docker/containers/411f0023c449089ca37b41d34b50258c48b8bba08932d6a6675599bb41e05245/411f0023c449089ca37b41d34b50258c48b8bba08932d6a6675599bb41e05245-json.log",
+        "Name": "/ki-adminer-1",
+        "RestartCount": 0,
+        "Driver": "overlay2",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "docker-default",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": null,
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "ki_default",
+            "PortBindings": {
+                "8080/tcp": [
+                    {
+                        "HostIp": "",
+                        "HostPort": "6080"
+                    }
+                ]
+            },
+            "RestartPolicy": {
+                "Name": "always",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "private",
+            "Dns": null,
+            "DnsOptions": null,
+            "DnsSearch": null,
+            "ExtraHosts": [],
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": null,
+            "BlkioDeviceReadBps": null,
+            "BlkioDeviceWriteBps": null,
+            "BlkioDeviceReadIOps": null,
+            "BlkioDeviceWriteIOps": null,
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": null,
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": null,
+            "Ulimits": null,
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/asound",
+                "/proc/acpi",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/sys/firmware",
+                "/sys/devices/virtual/powercap"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "GraphDriver": {
+            "Data": {
+                "LowerDir": "/var/lib/docker/overlay2/8ac45e57aef030b70e3872c503a87e4e29170cba36d8d8b07034a1c571b8cc6d-init/diff:/var/lib/docker/overlay2/46d5ac3bccded6e8e300fe2bbf381db9a3a4d03fb21e7dd5cdd0c6c5bce81661/diff:/var/lib/docker/overlay2/f2d7197f843fc5f0b149307eb9f903204aeaa3112d738120d0f07956ce2082cd/diff:/var/lib/docker/overlay2/e37953a451f9f80c2203abbe3b2b3fd4aaa7dfc6df0061aab64f4346932f9f3c/diff:/var/lib/docker/overlay2/7a78735882e86aaa4b1ad5e9c93e0bc6f9eb9587a9bda3bdbf7eb422ef67c8ad/diff:/var/lib/docker/overlay2/00b6ffb1bdd500fbea2e82733a947972708b49ed57c6678efc180913e54ebaa7/diff:/var/lib/docker/overlay2/6d9a24992ceaa0becda6b3f06d02c504acdf9213a002d6ba6ba31e6a22fc2b8c/diff:/var/lib/docker/overlay2/5f03697036ecda40024e2914987847241bb24faa9ec7ea04dc51ed66e551af62/diff",
+                "MergedDir": "/var/lib/docker/overlay2/8ac45e57aef030b70e3872c503a87e4e29170cba36d8d8b07034a1c571b8cc6d/merged",
+                "UpperDir": "/var/lib/docker/overlay2/8ac45e57aef030b70e3872c503a87e4e29170cba36d8d8b07034a1c571b8cc6d/diff",
+                "WorkDir": "/var/lib/docker/overlay2/8ac45e57aef030b70e3872c503a87e4e29170cba36d8d8b07034a1c571b8cc6d/work"
+            },
+            "Name": "overlay2"
+        },
+        "Mounts": [],
+        "Config": {
+            "Hostname": "411f0023c449",
+            "Domainname": "",
+            "User": "adminer",
+            "AttachStdin": false,
+            "AttachStdout": true,
+            "AttachStderr": true,
+            "ExposedPorts": {
+                "8080/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "ADMINER_VERSION=4.8.1",
+                "ADMINER_DOWNLOAD_SHA256=2fd7e6d8f987b243ab1839249551f62adce19704c47d3d0c8dd9e57ea5b9c6b3",
+                "ADMINER_COMMIT=1f173e18bdf0be29182e0d67989df56eadea4754"
+            ],
+            "Cmd": [
+                "php",
+                "-S",
+                "[::]:8080",
+                "-t",
+                "/var/www/html"
+            ],
+            "Image": "adminer:4.8.1",
+            "Volumes": null,
+            "WorkingDir": "/var/www/html",
+            "Entrypoint": [
+                "entrypoint.sh"
+            ],
+            "OnBuild": null,
+            "Labels": {
+                "com.docker.compose.config-hash": "70d0ad46f1d973271054c8db5d019324e8741184aac21e18a2bc7570e29c87c6",
+                "com.docker.compose.container-number": "1",
+                "com.docker.compose.depends_on": "",
+                "com.docker.compose.image": "sha256:c59cbdd3c9210d0e6596a8dc12d83cbfbeabc19e361ed137c370af126e1527c5",
+                "com.docker.compose.oneoff": "False",
+                "com.docker.compose.project": "ki",
+                "com.docker.compose.project.config_files": "/home/ki/compose.yaml",
+                "com.docker.compose.project.working_dir": "/home/ki",
+                "com.docker.compose.service": "adminer",
+                "com.docker.compose.version": "2.27.1"
+            },
+            "StopSignal": "SIGINT"
+        },
+        "NetworkSettings": {
+            "Bridge": "",
+            "SandboxID": "8eb6551a53e916957c6789b7b316dee5ab7104d52bc447c3bf66d4d9d06a5602",
+            "SandboxKey": "/var/run/docker/netns/8eb6551a53e9",
+            "Ports": {
+                "8080/tcp": [
+                    {
+                        "HostIp": "0.0.0.0",
+                        "HostPort": "6080"
+                    },
+                    {
+                        "HostIp": "::",
+                        "HostPort": "6080"
+                    }
+                ]
+            },
+            "HairpinMode": false,
+            "LinkLocalIPv6Address": "",
+            "LinkLocalIPv6PrefixLen": 0,
+            "SecondaryIPAddresses": null,
+            "SecondaryIPv6Addresses": null,
+            "EndpointID": "",
+            "Gateway": "",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "IPAddress": "",
+            "IPPrefixLen": 0,
+            "IPv6Gateway": "",
+            "MacAddress": "",
+            "Networks": {
+                "ki_default": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": [
+                        "ki-adminer-1",
+                        "adminer"
+                    ],
+                    "MacAddress": "02:42:ac:12:00:02",
+                    "NetworkID": "331662ecc9a595a48356ba0a8ceca538b360333ff581a0e257a036854b0a1571",
+                    "EndpointID": "b1bb7c7d626d79a36631580995e6428c19bb2b0478b164244076844dd3870882",
+                    "Gateway": "172.18.0.1",
+                    "IPAddress": "172.18.0.2",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DriverOpts": null,
+                    "DNSNames": [
+                        "ki-adminer-1",
+                        "adminer",
+                        "411f0023c449"
+                    ]
+                }
+            }
+        }
+    }
+]
+
+
+
+docker container inspect ki-db-1
+[
+    {
+        "Id": "a88bf348deefcb048f8ea482822a1395070f984ab68fc3f2210e1f56c367736a",
+        "Created": "2024-06-14T17:40:06.999461502Z",
+        "Path": "docker-entrypoint.sh",
+        "Args": [
+            "mariadbd"
+        ],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 3931,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2024-06-14T17:43:36.373460454Z",
+            "FinishedAt": "2024-06-14T17:43:27.961305351Z"
+        },
+        "Image": "sha256:039bd724508bee8d3247e2219a9019b57eb788e1f6dac6cefa9906ce80e433e2",
+        "ResolvConfPath": "/var/lib/docker/containers/a88bf348deefcb048f8ea482822a1395070f984ab68fc3f2210e1f56c367736a/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/a88bf348deefcb048f8ea482822a1395070f984ab68fc3f2210e1f56c367736a/hostname",
+        "HostsPath": "/var/lib/docker/containers/a88bf348deefcb048f8ea482822a1395070f984ab68fc3f2210e1f56c367736a/hosts",
+        "LogPath": "/var/lib/docker/containers/a88bf348deefcb048f8ea482822a1395070f984ab68fc3f2210e1f56c367736a/a88bf348deefcb048f8ea482822a1395070f984ab68fc3f2210e1f56c367736a-json.log",
+        "Name": "/ki-db-1",
+        "RestartCount": 0,
+        "Driver": "overlay2",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "docker-default",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": null,
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "ki_default",
+            "PortBindings": {},
+            "RestartPolicy": {
+                "Name": "always",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "private",
+            "Dns": null,
+            "DnsOptions": null,
+            "DnsSearch": null,
+            "ExtraHosts": [],
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": null,
+            "BlkioDeviceReadBps": null,
+            "BlkioDeviceWriteBps": null,
+            "BlkioDeviceReadIOps": null,
+            "BlkioDeviceWriteIOps": null,
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": null,
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": null,
+            "Ulimits": null,
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/asound",
+                "/proc/acpi",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/sys/firmware",
+                "/sys/devices/virtual/powercap"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "GraphDriver": {
+            "Data": {
+                "LowerDir": "/var/lib/docker/overlay2/8af307ea949f5d887bdfbf2de12a24a61b9a5e624724d22eae649a6b453dbcd2-init/diff:/var/lib/docker/overlay2/0c41b1791104516804f332217a6e7716958481441ed4519f47536be3742e23d5/diff:/var/lib/docker/overlay2/8490f8ba4f70c63ab2a7c3b4596a76e4548c7352ec135c5e535ad269a18b88e8/diff:/var/lib/docker/overlay2/6ec20f71896af5ecee87f932c37ca6277073acb9840b2afa9e79ae6339dad456/diff:/var/lib/docker/overlay2/7bb0fd821c6ad1ecd00b0ffc5effd8c519d73ddd80078caeda674222044fced4/diff:/var/lib/docker/overlay2/84612b2197c08b98f8e7bf71c3a74f7e80a6af7807f23a0bcc86306a45e2bd4f/diff:/var/lib/docker/overlay2/56914e3f09888d83f82e07bfb5fbef20907a53c0ee8695f9f42e17b57f3946a4/diff:/var/lib/docker/overlay2/d98c46606d1c7274d46e2db300767ada028b82bae00cc68e7108c3251d68c7dc/diff:/var/lib/docker/overlay2/a491843b6736d4ea8f9f2bec0f7702c86046fb5028b67d2c94b41a53877a547d/diff",
+                "MergedDir": "/var/lib/docker/overlay2/8af307ea949f5d887bdfbf2de12a24a61b9a5e624724d22eae649a6b453dbcd2/merged",
+                "UpperDir": "/var/lib/docker/overlay2/8af307ea949f5d887bdfbf2de12a24a61b9a5e624724d22eae649a6b453dbcd2/diff",
+                "WorkDir": "/var/lib/docker/overlay2/8af307ea949f5d887bdfbf2de12a24a61b9a5e624724d22eae649a6b453dbcd2/work"
+            },
+            "Name": "overlay2"
+        },
+        "Mounts": [
+            {
+                "Type": "volume",
+                "Name": "fd2e37adeb3c911aeac40db3bc31cb3d3675ebf7eba6c1a0e7af2705977fdcac",
+                "Source": "/var/lib/docker/volumes/fd2e37adeb3c911aeac40db3bc31cb3d3675ebf7eba6c1a0e7af2705977fdcac/_data",
+                "Destination": "/var/lib/mysql",
+                "Driver": "local",
+                "Mode": "",
+                "RW": true,
+                "Propagation": ""
+            }
+        ],
+        "Config": {
+            "Hostname": "a88bf348deef",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": true,
+            "AttachStderr": true,
+            "ExposedPorts": {
+                "3306/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "MYSQL_ROOT_PASSWORD=12345",
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "GOSU_VERSION=1.14",
+                "LANG=C.UTF-8",
+                "MARIADB_VERSION=1:10.10.2+maria~ubu2204"
+            ],
+            "Cmd": [
+                "mariadbd"
+            ],
+            "Image": "mariadb:10.10.2",
+            "Volumes": {
+                "/var/lib/mysql": {}
+            },
+            "WorkingDir": "",
+            "Entrypoint": [
+                "docker-entrypoint.sh"
+            ],
+            "OnBuild": null,
+            "Labels": {
+                "com.docker.compose.config-hash": "f7d27c8f877794c20d2cc1ff95e35ca34781e178577595a2e27c706a1ab69678",
+                "com.docker.compose.container-number": "1",
+                "com.docker.compose.depends_on": "",
+                "com.docker.compose.image": "sha256:039bd724508bee8d3247e2219a9019b57eb788e1f6dac6cefa9906ce80e433e2",
+                "com.docker.compose.oneoff": "False",
+                "com.docker.compose.project": "ki",
+                "com.docker.compose.project.config_files": "/home/ki/compose.yaml",
+                "com.docker.compose.project.working_dir": "/home/ki",
+                "com.docker.compose.service": "db",
+                "com.docker.compose.version": "2.27.1",
+                "org.opencontainers.image.authors": "MariaDB Community",
+                "org.opencontainers.image.base.name": "docker.io/library/ubuntu:jammy",
+                "org.opencontainers.image.description": "MariaDB Database for relational SQL",
+                "org.opencontainers.image.documentation": "https://hub.docker.com/_/mariadb/",
+                "org.opencontainers.image.licenses": "GPL-2.0",
+                "org.opencontainers.image.ref.name": "ubuntu",
+                "org.opencontainers.image.source": "https://github.com/MariaDB/mariadb-docker",
+                "org.opencontainers.image.title": "MariaDB Database",
+                "org.opencontainers.image.url": "https://github.com/MariaDB/mariadb-docker",
+                "org.opencontainers.image.vendor": "MariaDB Community",
+                "org.opencontainers.image.version": "10.10.2"
+            }
+        },
+        "NetworkSettings": {
+            "Bridge": "",
+            "SandboxID": "6b83da73381b0b9a746b8887443dd42357e0aa105d252d1801012714e3f6fc7d",
+            "SandboxKey": "/var/run/docker/netns/6b83da73381b",
+            "Ports": {
+                "3306/tcp": null
+            },
+            "HairpinMode": false,
+            "LinkLocalIPv6Address": "",
+            "LinkLocalIPv6PrefixLen": 0,
+            "SecondaryIPAddresses": null,
+            "SecondaryIPv6Addresses": null,
+            "EndpointID": "",
+            "Gateway": "",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "IPAddress": "",
+            "IPPrefixLen": 0,
+            "IPv6Gateway": "",
+            "MacAddress": "",
+            "Networks": {
+                "ki_default": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": [
+                        "ki-db-1",
+                        "db"
+                    ],
+                    "MacAddress": "02:42:ac:12:00:03",
+                    "NetworkID": "331662ecc9a595a48356ba0a8ceca538b360333ff581a0e257a036854b0a1571",
+                    "EndpointID": "918bd12017a0a682405dc237890270a4a64d4b4077a5a8ddf4f00fd83f78c217",
+                    "Gateway": "172.18.0.1",
+                    "IPAddress": "172.18.0.3",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DriverOpts": null,
+                    "DNSNames": [
+                        "ki-db-1",
+                        "db",
+                        "a88bf348deef"
+                    ]
+                }
+            }
+        }
+    }
+]
+
+
+
+docker-compose down
+WARN[0000] /home/ki/compose.yaml: `version` is obsolete
+[+] Running 3/3
+ ✔ Container ki-db-1       Removed                                                                0.4s
+ ✔ Container ki-adminer-1  Removed                                                                0.3s
+ ✔ Network ki_default      Removed                                                                0.5s
+
+
+
+# Docker Swarm
+
+docker swarm init
+Swarm initialized: current node (jdg4xy43zx7h2bci2luds4trb) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-1aii6ki61vavyo11xly1dx8rl08gckrj6hkx5jd5l9e7zg5l6k-8dzv41sguh2kevhryxvh0wzez 192.168.23.128:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+
+docker node ls
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+q0yfkr6yxrxvf8xvy2ms882br *   ki         Ready     Active         Leader           26.1.4
+
+
+# Removing the last manager erases all current state
+docker swarm leave -f
+
+
+# Docker Swarm и Overlay сети
+
+
+docker network ls
+NETWORK ID     NAME              DRIVER    SCOPE
+aad2d6ed1e96   bridge            bridge    local
+9c11b08abfe4   docker_gwbridge   bridge    local
+d69d34cbb995   host              host      local
+j4wjo8yiw1zl   ingress           overlay   swarm
+e0f1636c84c1   none              null      local
+
+docker network create --driver overlay --subnet 4.5.6.0/24 test-network --attachable
+savrjycarxrtkbh8n9ieh8n88
+
+docker network ls
+NETWORK ID     NAME              DRIVER    SCOPE
+aad2d6ed1e96   bridge            bridge    local
+9c11b08abfe4   docker_gwbridge   bridge    local
+d69d34cbb995   host              host      local
+j4wjo8yiw1zl   ingress           overlay   swarm
+e0f1636c84c1   none              null      local
+savrjycarxrt   test-network      overlay   swarm
+
+
+docker network rm test-network
+test-network
+
+
+docker network ls
+NETWORK ID     NAME              DRIVER    SCOPE
+aad2d6ed1e96   bridge            bridge    local
+9c11b08abfe4   docker_gwbridge   bridge    local
+d69d34cbb995   host              host      local
+j4wjo8yiw1zl   ingress           overlay   swarm
+e0f1636c84c1   none              null      local

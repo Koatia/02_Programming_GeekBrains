@@ -1,0 +1,73 @@
+Урок 2. Механизмы контрольных групп (https://gb.ru/lessons/443730)
+
+apt install cgroup-tools
+
+mkdir /sys/fs/cgroup/testgroup1
+ls /sys/fs/cgroup/testgroup1
+
+cgroup.controllers      cpuset.cpus.exclusive            io.max               memory.swap.current
+cgroup.events           cpuset.cpus.exclusive.effective  io.pressure          memory.swap.events
+cgroup.freeze           cpuset.cpus.partition            io.prio.class        memory.swap.high
+cgroup.kill             cpuset.mems                      io.stat              memory.swap.max
+cgroup.max.depth        cpuset.mems.effective            io.weight            memory.swap.peak
+cgroup.max.descendants  cpu.stat                         memory.current       memory.zswap.current
+cgroup.pressure         cpu.stat.local                   memory.events        memory.zswap.max
+cgroup.procs            cpu.uclamp.max                   memory.events.local  memory.zswap.writeback
+cgroup.stat             cpu.uclamp.min                   memory.high          misc.current
+cgroup.subtree_control  cpu.weight                       memory.low           misc.events
+cgroup.threads          cpu.weight.nice                  memory.max           misc.max
+cgroup.type             hugetlb.2MB.current              memory.min           pids.current
+cpu.idle                hugetlb.2MB.events               memory.numa_stat     pids.events
+cpu.max                 hugetlb.2MB.events.local         memory.oom.group     pids.max
+cpu.max.burst           hugetlb.2MB.max                  memory.peak          pids.peak
+cpu.pressure            hugetlb.2MB.numa_stat            memory.pressure      rdma.current
+cpuset.cpus             hugetlb.2MB.rsvd.current         memory.reclaim       rdma.max
+cpuset.cpus.effective   hugetlb.2MB.rsvd.max             memory.stat
+
+cat /sys/fs/cgroup/testgroup1/cpu.stat
+
+usage_usec 0
+user_usec 0
+system_usec 0
+core_sched.force_idle_usec 0
+nr_periods 0
+nr_throttled 0
+throttled_usec 0
+nr_bursts 0
+burst_usec 0
+
+cat /proc/$$/status | grep 'allowed'
+
+Cpus_allowed:   3ff
+Cpus_allowed_list:      0-9
+Mems_allowed:   00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000001
+Mems_allowed_list:      0
+
+echo '200M' >  /sys/fs/cgroup/testgroup1/memory.max
+cat /sys/fs/cgroup/testgroup1/memory.max
+209715200
+
+
+
+####### Механизм LXC
+
+apt install lxc lxc-templates debootstrap bridge-utils
+
+# To made the container we use the command
+lxc-create -n test123 -t ubuntu
+
+##
+# The default user is 'ubuntu' with password 'ubuntu'!
+# Use the 'sudo' command to run tasks as root in the container.
+##
+
+# To start the container we use the command
+lxc-start -d -n test123
+
+# To stop the container we use the command
+lxc-stop -n test123 -k
+
+# Now we delete the container using the command.
+lxc-destroy -n test123
+# To delete the container including all the snapshots related to the container. Our Support Engineers use the command.
+lxc-destroy -n test123 -s

@@ -1,0 +1,85 @@
+# Настройка сервера
+sudo apt install nginx apache2 libapache2-mod-php8.3 php8.3 php8.3-fpm mysql-server-8.0
+
+# Разрешим автозапуск сервера:
+sudo systemctl enable nginx
+sudo service nginx restart
+
+# Настройка на совместную работу веб-серверов Nginx и Apache по схеме
+обратного прокси (reverse proxy)
+# Конфигурация Apache При одновременной работе Nginx и Apache необходимо выделить разные порты для их работы. По умолчанию веб-сервера слушают 80порт, поэтому нужно в конфигурации портов Apache (/etc/apache2/ports.conf) поставить другой номер порта: Listen 8080
+
+sudo echo '# If you just change the port or add more ports here, you will likely also
+# have to change the VirtualHost statement in
+# /etc/apache2/sites-enabled/000-default.conf
+
+Listen 8080
+
+<IfModule ssl_module>
+        Listen 443
+</IfModule>
+
+<IfModule mod_gnutls.c>
+        Listen 443
+</IfModule>' > /etc/apache2/ports.conf
+
+# После внесения изменений в конфигурацию не забываем проверить синтаксис:
+sudo apachectl -t
+# И применить новую конфигурацию:
+sudo systemctl reload apache2
+# Restart Apache 2 web server, enter:
+sudo service apache2 restart
+
+# Динамический и статический контент. Reverse proxy
+# В этой схеме Nginx выступает в виде прокси-сервера, который обрабатывает статические запросы, а динамические отправляет на другой сервер (например, PHP-FPM или Apache). В этой схеме Nginx иногда называют frontend сервер, а Apache – backend сервер
+
+# Для настройки Nginx в качестве обратного прокси нужно настроить несколько блоков location. Один будет перехватывать статические запросы, а другой —
+переадресовывать запросы на Apache
+
+sudo echo 'server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        root /var/www/html;
+
+        # Add index.php to the list if you are using PHP
+        index index.html index.htm index.nginx-debian.html;
+
+        server_name _;
+
+        location / {
+                proxy_pass http://localhost:8080;
+                proxy_set_header Host $host;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Real-IP $remote_addr;
+        }
+
+        location ~* ^.+.(jpg|jpeg|gif|png|ico|css|zip|pdf|txt|tar|js)$ {
+                root /var/www/html;
+        }
+
+        location ~ \.php$ {
+                include snippets/fastcgi-php.conf;
+                root /var/www/html;
+                fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        }
+}' > /etc/nginx/sites-available/default
+
+# Restart nginx
+sudo nginx -s reload
+
+# Установка PHP, настройка модуля Apache
+# создадим файл info.php в корне основного сайта для Apache
+sudo cat > /var/www/html/info.php  <<EOF
+<?php
+phpinfo();
+?>
+EOF
+
+# Далее можно зайти браузером в виртуальной машине по адресу:
+http://localhost/info.php
+
+
+# Process list
+ps afx
+ss -ntlp

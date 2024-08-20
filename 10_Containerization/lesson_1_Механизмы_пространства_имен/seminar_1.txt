@@ -1,0 +1,209 @@
+root@ki:/home/ki# ls -l /proc/$$/ns
+total 0
+lrwxrwxrwx 1 root root 0 Jun  3 14:15 cgroup -> 'cgroup:[4026531835]'
+lrwxrwxrwx 1 root root 0 Jun  3 14:15 ipc -> 'ipc:[4026531839]'
+lrwxrwxrwx 1 root root 0 Jun  3 14:15 mnt -> 'mnt:[4026531841]'
+lrwxrwxrwx 1 root root 0 Jun  3 14:15 net -> 'net:[4026531840]'
+lrwxrwxrwx 1 root root 0 Jun  3 14:15 pid -> 'pid:[4026531836]'
+lrwxrwxrwx 1 root root 0 Jun  3 14:15 pid_for_children -> 'pid:[4026531836]'
+lrwxrwxrwx 1 root root 0 Jun  3 14:15 time -> 'time:[4026531834]'
+lrwxrwxrwx 1 root root 0 Jun  3 14:15 time_for_children -> 'time:[4026531834]'
+lrwxrwxrwx 1 root root 0 Jun  3 14:15 user -> 'user:[4026531837]'
+lrwxrwxrwx 1 root root 0 Jun  3 14:15 uts -> 'uts:[4026531838]'
+
+root@ki:/home/ki# lsns
+        NS TYPE   NPROCS   PID USER             COMMAND
+4026531834 time      215     1 root             /sbin/init
+4026531835 cgroup    215     1 root             /sbin/init
+4026531836 pid       215     1 root             /sbin/init
+4026531837 user      215     1 root             /sbin/init
+4026531838 uts       210     1 root             /sbin/init
+4026531839 ipc       215     1 root             /sbin/init
+4026531840 net       215     1 root             /sbin/init
+4026531841 mnt       205     1 root             /sbin/init
+4026532185 mnt         1   484 root             ├─/usr/lib/systemd/systemd-udevd
+4026532186 uts         1   484 root             ├─/usr/lib/systemd/systemd-udevd
+4026532260 mnt         1   725 systemd-network  ├─/usr/lib/systemd/systemd-networkd
+4026532261 mnt         1   770 systemd-resolve  ├─/usr/lib/systemd/systemd-resolved
+4026532262 mnt         1   776 systemd-timesync ├─/usr/lib/systemd/systemd-timesyncd
+4026532263 uts         1   776 systemd-timesync ├─/usr/lib/systemd/systemd-timesyncd
+4026532265 mnt         1   872 root             ├─/usr/lib/systemd/systemd-logind
+4026532266 uts         1   872 root             ├─/usr/lib/systemd/systemd-logind
+4026532268 mnt         2  1354 root             ├─dockerd --group docker --exec-root=/run/snap.docker
+4026532329 uts         1   915 syslog           ├─/usr/sbin/rsyslogd -n -iNONE
+4026532330 mnt         1   879 polkitd          ├─/usr/lib/polkit-1/polkitd --no-debug
+4026532331 uts         1   879 polkitd          ├─/usr/lib/polkit-1/polkitd --no-debug
+4026532332 mnt         1   937 root             └─/usr/sbin/ModemManager
+4026531862 mnt         1    85 root             kdevtmpfs
+
+root@ki:/home/ki# ip netns list
+root@ki:/home/ki# ip netns add testns
+root@ki:/home/ki# ip netns list testns
+root@ki:/home/ki# ip netns exec testns bash
+
+root@ki:/home/ki# ip a
+1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+
+root@ki:/home/ki# exit
+exit
+root@ki:/home/ki# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute
+       valid_lft forever preferred_lft forever
+2: enp0s3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 08:00:27:6e:6f:61 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.66/24 metric 100 brd 192.168.1.255 scope global dynamic enp0s3
+       valid_lft 23811sec preferred_lft 23811sec
+    inet6 fe80::a00:27ff:fe6e:6f61/64 scope link
+       valid_lft forever preferred_lft forever
+3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default
+    link/ether 02:42:fa:a1:78:58 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+
+
+root@ki:/home/ki# ip link add veth0 type veth peer name veth1
+root@ki:/home/ki# ip link set veth1 netns testns
+root@ki:/home/ki# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute
+       valid_lft forever preferred_lft forever
+2: enp0s3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 08:00:27:6e:6f:61 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.66/24 metric 100 brd 192.168.1.255 scope global dynamic enp0s3
+       valid_lft 23478sec preferred_lft 23478sec
+    inet6 fe80::a00:27ff:fe6e:6f61/64 scope link
+       valid_lft forever preferred_lft forever
+3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default
+    link/ether 02:42:fa:a1:78:58 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+5: veth0@if4: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
+    link/ether 26:7c:99:99:d9:76 brd ff:ff:ff:ff:ff:ff link-netns testns
+
+
+root@ki:/home/ki# ip addr add 10.0.0.1/24 dev veth0
+root@ki:/home/ki# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute
+       valid_lft forever preferred_lft forever
+2: enp0s3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 08:00:27:6e:6f:61 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.66/24 metric 100 brd 192.168.1.255 scope global dynamic enp0s3
+       valid_lft 23320sec preferred_lft 23320sec
+    inet6 fe80::a00:27ff:fe6e:6f61/64 scope link
+       valid_lft forever preferred_lft forever
+3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default
+    link/ether 02:42:fa:a1:78:58 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+5: veth0@if4: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
+    link/ether 26:7c:99:99:d9:76 brd ff:ff:ff:ff:ff:ff link-netns testns
+    inet 10.0.0.1/24 scope global veth0
+       valid_lft forever preferred_lft forever
+
+root@ki:/home/ki# ip link set dev veth0 up
+root@ki:/home/ki# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute
+       valid_lft forever preferred_lft forever
+2: enp0s3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 08:00:27:6e:6f:61 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.66/24 metric 100 brd 192.168.1.255 scope global dynamic enp0s3
+       valid_lft 23230sec preferred_lft 23230sec
+    inet6 fe80::a00:27ff:fe6e:6f61/64 scope link
+       valid_lft forever preferred_lft forever
+3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default
+    link/ether 02:42:fa:a1:78:58 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+5: veth0@if4: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state LOWERLAYERDOWN group default qlen 1000
+    link/ether 26:7c:99:99:d9:76 brd ff:ff:ff:ff:ff:ff link-netns testns
+    inet 10.0.0.1/24 scope global veth0
+       valid_lft forever preferred_lft forever
+
+--- testns in new console
+root@ki:/home/ki# ip netns exec testns bash
+root@ki:/home/ki# ip a
+1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+4: veth1@if5: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
+    link/ether 1e:c4:e8:32:78:07 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+
+root@ki:/home/ki# ip add addr 10.0.0.2/24 dev veth1
+Command "addr" is unknown, try "ip address help".
+root@ki:/home/ki# ip addr add 10.0.0.2/24 dev veth1
+root@ki:/home/ki# ip link set dev veth1 up
+root@ki:/home/ki# ip a
+1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+4: veth1@if5: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 1e:c4:e8:32:78:07 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 10.0.0.2/24 scope global veth1
+       valid_lft forever preferred_lft forever
+    inet6 fe80::1cc4:e8ff:fe32:7807/64 scope link
+       valid_lft forever preferred_lft forever
+
+root@ki:/home/ki# ping 10.0.0.1
+PING 10.0.0.1 (10.0.0.1) 56(84) bytes of data.
+64 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.141 ms
+64 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.520 ms
+64 bytes from 10.0.0.1: icmp_seq=3 ttl=64 time=0.097 ms
+64 bytes from 10.0.0.1: icmp_seq=4 ttl=64 time=0.088 ms
+
+--- return in main console
+
+root@ki:/home/ki# unshare --net /bin/bash
+root@ki:/home/ki# ip a
+1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+
+root@ki:/home/ki# exit
+exit
+
+root@ki:/home/ki# unshare --pid --net --fork --mount-proc //bin/bash
+root@ki:/home/ki# ip a
+1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+root@ki:/home/ki# ps -aux
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.0   7604  4352 pts/1    S    14:46   0:00 //bin/bash
+root           9  0.0  0.0  12184  5248 pts/1    R+   14:46   0:00 ps -aux
+root@ki:/home/ki# ls /
+bin                cdrom  home   lib.usr-is-merged  mnt   root  sbin.usr-is-merged  sys  var
+bin.usr-is-merged  dev    lib    lost+found         opt   run   snap                tmp
+boot               etc    lib64  media              proc  sbin  srv                 usr
+
+root@ki:/home/ki# exit
+exit
+
+--- Изоляция файловой системы
+
+root@ki:/home/ki# unshare --mount --root=gb /bin/bash
+bash-5.2# ls /
+bin  lib  lib64
+
+bash-5.2# ip a
+bash: ip: command not found
+
+bash-5.2# exit
+exit
+
+
+unshare -- команда, запускающая программу в новом пространстве имён.
+--mount -- опция указывает, что требуется изолировать пространство имен монтирования файловой системы (Unshare the mount namespace, согласно man unshare)
+--root=<dir> -- опция указывает какая директория должна быть смонтирована как корневая.
+/bin/zsh -- Командный интерпретатор bash; процесс, который будет запущен в изолированном пространстве имён.

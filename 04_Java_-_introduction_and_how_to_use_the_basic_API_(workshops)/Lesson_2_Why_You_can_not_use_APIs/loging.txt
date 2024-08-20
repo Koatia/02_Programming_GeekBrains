@@ -1,0 +1,22 @@
+мар. 12, 2024 7:52:45 PM ContentFloder writeToFile
+SEVERE: .idea
+мар. 12, 2024 7:52:45 PM ContentFloder writeToFile
+SEVERE: ContentFloder.java
+мар. 12, 2024 7:52:45 PM ContentFloder writeToFile
+SEVERE: ExampleStringBuilder.java
+мар. 12, 2024 7:52:45 PM ContentFloder writeToFile
+SEVERE: file1.txt
+мар. 12, 2024 7:52:45 PM ContentFloder writeToFile
+SEVERE: HomeWork1.java
+мар. 12, 2024 7:52:45 PM ContentFloder writeToFile
+SEVERE: HomeWork2.java
+мар. 12, 2024 7:52:45 PM ContentFloder writeToFile
+SEVERE: Lesson_2_Why_You_can_not_use_APIs.iml
+мар. 12, 2024 7:52:45 PM ContentFloder writeToFile
+SEVERE: log.txt
+мар. 12, 2024 7:52:45 PM ContentFloder writeToFile
+SEVERE: loging.txt
+мар. 12, 2024 7:52:45 PM ContentFloder writeToFile
+SEVERE: loging.txt.lck
+мар. 12, 2024 7:52:45 PM ContentFloder writeToFile
+SEVERE: out

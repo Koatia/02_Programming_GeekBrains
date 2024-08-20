@@ -1,0 +1,150 @@
+Урок 5. Docker Compose и Docker Swarm (https://gb.ru/lessons/447441)
+
+Задание 1:
+1) создать сервис, состоящий из 2 различных контейнеров: 1 - веб, 2 - БД
+2) далее необходимо создать 3 сервиса в каждом окружении (dev, prod, lab)
+3) по итогу на каждой ноде должно быть по 2 работающих контейнера
+4) выводы зафиксировать
+
+Задание 2*:
+1) нужно создать 2 ДК-файла, в которых будут описываться сервисы
+2) повторить задание 1 для двух окружений: lab, dev
+3) обязательно проверить и зафиксировать результаты, чтобы можно было выслать преподавателю для проверки
+
+
+# Node left the swarm
+docker swarm leave -f
+
+docker node ls
+
+
+# Swarm initialized
+docker swarm init
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-4t1k0wc4bx8qym3lehhvnff58ckk50iw7yuce54x0cfwd3vi6i-1kp909g51dmprztgu1zaz1rgi 192.168.1.142:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+# Chenge node name
+sudo hostnamectl set-hostname "node1"
+
+docker node ls
+
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+hq8lryvh00hksl8xqsy0keomq *   node1      Ready     Active         Leader           26.1.4
+sdj43or1qmnkv3zii2aic6kua     node2      Ready     Active                          26.1.4
+v42dtlq7wdjpogh7rrwkzgmx7     node3      Ready     Active                          26.1.4
+
+
+df -h
+Filesystem                         Size  Used Avail Use% Mounted on
+tmpfs                              790M  1.7M  788M   1% /run
+/dev/mapper/ubuntu--vg-ubuntu--lv  9.8G  9.6G     0 100% /
+tmpfs                              3.9G     0  3.9G   0% /dev/shm
+tmpfs                              5.0M     0  5.0M   0% /run/lock
+tmpfs                              3.9G     0  3.9G   0% /run/qemu
+/dev/sda2                          1.8G   95M  1.6G   6% /boot
+tmpfs                              790M   12K  790M   1% /run/user/1000
+overlay                            9.8G  9.6G     0 100% /var/lib/docker/overlay2/f4c50239d5022af0e282a2c5b624cf92694daf39b01a497da61dd0524c77b7fb/merged
+
+
+## Очистка Docker
+docker container prune
+docker image prune -a
+docker volume prune
+docker network prune
+
+
+# docker service create --mode=global --name mysql -e MYSQL_ROOT_PASSWORD=test123 -d mysql:8.4
+# docker service create --replicas 3 --name mysql -e MYSQL_ROOT_PASSWORD=test123 -d mysql:8.4
+# docker service create --mode=global --name myphp -d -p 8081:80 phpmyadmin/phpmyadmin
+# docker service create --mode=global --name mynginx nginx:alpine
+
+
+#### Deploy to Swarm  MySQL + phpMyAdmin Docker Compose
+
+echo 'version: "3.3"
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - 6033:3306
+    deploy:
+      replicas: 1
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root
+    depends_on:
+      - db
+    ports:
+      - 8082:80
+    deploy:
+      replicas: 3
+
+volumes:
+  db_data:
+' > compose-stack.yaml
+
+# nano compose-stack.yaml
+
+# docker stack rm test
+# docker volume rm test_db_data
+
+docker stack deploy -c compose-stack.yaml test
+
+
+docker service ls
+ID             NAME              MODE         REPLICAS   IMAGE                          PORTS
+etbhgs3z7nqz   test_db           replicated   1/1        mysql:latest                   *:6033->3306/tcp
+z6ce4gqs4e7z   test_phpmyadmin   replicated   3/3        phpmyadmin/phpmyadmin:latest   *:8082->80/tcp
+
+
+
+# test_phpmyadmin scaled to 3
+docker service scale test_phpmyadmin=3
+
+
+
+
+
+docker node ls
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+lqp1c7xy0ho0mde2ydxjk31xl *   node1      Ready     Active         Leader           26.1.4
+tvidw7pc5u92kktwcoqo48dp6     node2      Ready     Active                          26.1.4
+he1am7ibag46i64nvepme1zs0     node3      Ready     Active                          26.1.4
+
+
+docker node update --label-add env=prod node1
+docker node update --label-add env=dev node2
+docker node update --label-add env=lab node3
+
+docker node inspect node1
+[
+    {
+        "ID": "lqp1c7xy0ho0mde2ydxjk31xl",
+        "Version": {
+            "Index": 1235
+        },
+        "CreatedAt": "2024-06-15T10:46:19.646031807Z",
+        "UpdatedAt": "2024-06-15T11:20:08.723954891Z",
+        "Spec": {
+            "Labels": {
+                "env": "prod"
+
+
+
+docker service create --name nginx-1 --constraint node.labels.env=prod --replicas 2 nginx
+
+docker service ps nginx-1
+
+docker service rm nginx-1

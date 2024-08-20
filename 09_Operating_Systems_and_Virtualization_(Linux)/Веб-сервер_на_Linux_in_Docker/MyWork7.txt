@@ -1,0 +1,595 @@
+PS C:\Users\Kostia> ssh ki@192.168.1.66
+ki@192.168.1.66's password:
+Welcome to Ubuntu 24.04 LTS (GNU/Linux 6.8.0-31-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Sat Jun  1 07:39:09 AM UTC 2024
+
+  System load:  0.08               Processes:               213
+  Usage of /:   21.9% of 11.21GB   Users logged in:         1
+  Memory usage: 5%                 IPv4 address for enp0s3: 192.168.1.66
+  Swap usage:   0%
+
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+
+
+Last login: Sat Jun  1 06:55:47 2024 from 192.168.1.98
+ki@ki:~$
+ki@ki:~$
+ki@ki:~$
+ki@ki:~$ sudo apt update && sudo apt upgrade
+[sudo] password for ki:
+Hit:1 http://ru.archive.ubuntu.com/ubuntu noble InRelease
+Get:2 http://ru.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Hit:3 http://security.ubuntu.com/ubuntu noble-security InRelease
+Hit:4 http://ru.archive.ubuntu.com/ubuntu noble-backports InRelease
+Fetched 126 kB in 1s (159 kB/s)
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+All packages are up to date.
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+Calculating upgrade... Done
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+ki@ki:~$
+ki@ki:~$
+ki@ki:~$ sudo apt install docker.io
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following additional packages will be installed:
+  bridge-utils containerd dns-root-data dnsmasq-base pigz runc ubuntu-fan
+Suggested packages:
+  ifupdown aufs-tools cgroupfs-mount | cgroup-lite debootstrap docker-buildx docker-compose-v2
+  docker-doc rinse zfs-fuse | zfsutils
+The following NEW packages will be installed:
+  bridge-utils containerd dns-root-data dnsmasq-base docker.io pigz runc ubuntu-fan
+0 upgraded, 8 newly installed, 0 to remove and 0 not upgraded.
+Need to get 76.8 MB of archives.
+After this operation, 289 MB of additional disk space will be used.
+Do you want to continue? [Y/n]
+Get:1 http://ru.archive.ubuntu.com/ubuntu noble/universe amd64 pigz amd64 2.8-1 [65.6 kB]
+Get:2 http://ru.archive.ubuntu.com/ubuntu noble/main amd64 bridge-utils amd64 1.7.1-1ubuntu2 [33.9 kB]
+Get:3 http://ru.archive.ubuntu.com/ubuntu noble/main amd64 runc amd64 1.1.12-0ubuntu3 [8,599 kB]
+Get:4 http://ru.archive.ubuntu.com/ubuntu noble/main amd64 containerd amd64 1.7.12-0ubuntu4 [38.6 MB]
+Get:5 http://ru.archive.ubuntu.com/ubuntu noble/main amd64 dns-root-data all 2023112702~willsync1 [4,450 B]
+Get:6 http://ru.archive.ubuntu.com/ubuntu noble/main amd64 dnsmasq-base amd64 2.90-2build2 [375 kB]
+Get:7 http://ru.archive.ubuntu.com/ubuntu noble/universe amd64 docker.io amd64 24.0.7-0ubuntu4 [29.1 MB]
+Get:8 http://ru.archive.ubuntu.com/ubuntu noble/universe amd64 ubuntu-fan all 0.12.16 [35.2 kB]
+Fetched 76.8 MB in 11s (6,812 kB/s)
+Preconfiguring packages ...
+Selecting previously unselected package pigz.
+(Reading database ... 83338 files and directories currently installed.)
+Preparing to unpack .../0-pigz_2.8-1_amd64.deb ...
+Unpacking pigz (2.8-1) ...
+Selecting previously unselected package bridge-utils.
+Preparing to unpack .../1-bridge-utils_1.7.1-1ubuntu2_amd64.deb ...
+Unpacking bridge-utils (1.7.1-1ubuntu2) ...
+Selecting previously unselected package runc.
+Preparing to unpack .../2-runc_1.1.12-0ubuntu3_amd64.deb ...
+Unpacking runc (1.1.12-0ubuntu3) ...
+Selecting previously unselected package containerd.
+Preparing to unpack .../3-containerd_1.7.12-0ubuntu4_amd64.deb ...
+Unpacking containerd (1.7.12-0ubuntu4) ...
+Selecting previously unselected package dns-root-data.
+Preparing to unpack .../4-dns-root-data_2023112702~willsync1_all.deb ...
+Unpacking dns-root-data (2023112702~willsync1) ...
+Selecting previously unselected package dnsmasq-base.
+Preparing to unpack .../5-dnsmasq-base_2.90-2build2_amd64.deb ...
+Unpacking dnsmasq-base (2.90-2build2) ...
+Selecting previously unselected package docker.io.
+Preparing to unpack .../6-docker.io_24.0.7-0ubuntu4_amd64.deb ...
+Unpacking docker.io (24.0.7-0ubuntu4) ...
+Selecting previously unselected package ubuntu-fan.
+Preparing to unpack .../7-ubuntu-fan_0.12.16_all.deb ...
+Unpacking ubuntu-fan (0.12.16) ...
+Setting up dnsmasq-base (2.90-2build2) ...
+Setting up runc (1.1.12-0ubuntu3) ...
+Setting up dns-root-data (2023112702~willsync1) ...
+Setting up bridge-utils (1.7.1-1ubuntu2) ...
+Setting up pigz (2.8-1) ...
+Setting up containerd (1.7.12-0ubuntu4) ...
+Created symlink /etc/systemd/system/multi-user.target.wants/containerd.service → /usr/lib/systemd/system/containerd.service.
+Setting up ubuntu-fan (0.12.16) ...
+Created symlink /etc/systemd/system/multi-user.target.wants/ubuntu-fan.service → /usr/lib/systemd/system/ubuntu-fan.service.
+Setting up docker.io (24.0.7-0ubuntu4) ...
+info: Selecting GID from range 100 to 999 ...
+info: Adding group `docker' (GID 110) ...
+Created symlink /etc/systemd/system/multi-user.target.wants/docker.service → /usr/lib/systemd/system/docker.service.
+Created symlink /etc/systemd/system/sockets.target.wants/docker.socket → /usr/lib/systemd/system/docker.socket.
+Processing triggers for dbus (1.14.10-4ubuntu4) ...
+Processing triggers for man-db (2.12.0-4build2) ...
+Scanning processes...
+Scanning linux images...
+
+Running kernel seems to be up-to-date.
+
+No services need to be restarted.
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+ki@ki:~$
+ki@ki:~$
+ki@ki:~$
+ki@ki:~$ sudo sh -c 'echo "{\"registry-mirrors\": [\"https://dh-mirror.gitverse.ru\"]}" > /etc/docker/daemon.json'
+ki@ki:~$
+ki@ki:~$
+ki@ki:~$ cat /etc/docker/daemon.json
+{"registry-mirrors": ["https://dh-mirror.gitverse.ru"]}
+ki@ki:~$
+ki@ki:~$
+ki@ki:~$ sudo service docker restart
+ki@ki:~$ sudo systemctl status docker
+● docker.service - Docker Application Container Engine
+     Loaded: loaded (/usr/lib/systemd/system/docker.service; enabled; preset: enabled)
+     Active: active (running) since Sat 2024-06-01 07:41:53 UTC; 11s ago
+TriggeredBy: ● docker.socket
+       Docs: https://docs.docker.com
+   Main PID: 10258 (dockerd)
+      Tasks: 14
+     Memory: 24.6M (peak: 26.8M)
+        CPU: 195ms
+     CGroup: /system.slice/docker.service
+             └─10258 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+
+Jun 01 07:41:53 ki dockerd[10258]: time="2024-06-01T07:41:53.226608098Z" level=info msg="Starting up"
+Jun 01 07:41:53 ki dockerd[10258]: time="2024-06-01T07:41:53.227034680Z" level=info msg="detected 127>
+Jun 01 07:41:53 ki dockerd[10258]: time="2024-06-01T07:41:53.235178121Z" level=info msg="[graphdriver>
+Jun 01 07:41:53 ki dockerd[10258]: time="2024-06-01T07:41:53.235243686Z" level=info msg="Loading cont>
+Jun 01 07:41:53 ki dockerd[10258]: time="2024-06-01T07:41:53.582098076Z" level=info msg="Default brid>
+Jun 01 07:41:53 ki dockerd[10258]: time="2024-06-01T07:41:53.635212074Z" level=info msg="Loading cont>
+Jun 01 07:41:53 ki dockerd[10258]: time="2024-06-01T07:41:53.645731438Z" level=info msg="Docker daemo>
+Jun 01 07:41:53 ki dockerd[10258]: time="2024-06-01T07:41:53.645762747Z" level=info msg="Daemon has c>
+Jun 01 07:41:53 ki dockerd[10258]: time="2024-06-01T07:41:53.657089920Z" level=info msg="API listen o>
+Jun 01 07:41:53 ki systemd[1]: Started docker.service - Docker Application Container Engine.
+
+ki@ki:~$ sudo apt install docker-compose
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following additional packages will be installed:
+  python3-compose python3-docker python3-dockerpty python3-docopt python3-dotenv python3-texttable
+  python3-websocket
+The following NEW packages will be installed:
+  docker-compose python3-compose python3-docker python3-dockerpty python3-docopt python3-dotenv
+  python3-texttable python3-websocket
+0 upgraded, 8 newly installed, 0 to remove and 0 not upgraded.
+Need to get 297 kB of archives.
+After this operation, 1,589 kB of additional disk space will be used.
+Do you want to continue? [Y/n]
+Get:1 http://ru.archive.ubuntu.com/ubuntu noble/universe amd64 python3-websocket all 1.7.0-1 [38.1 kB]
+Get:2 http://ru.archive.ubuntu.com/ubuntu noble/universe amd64 python3-docker all 5.0.3-1ubuntu1 [89.1 kB]
+Get:3 http://ru.archive.ubuntu.com/ubuntu noble/universe amd64 python3-dockerpty all 0.4.1-5 [11.4 kB]
+Get:4 http://ru.archive.ubuntu.com/ubuntu noble/universe amd64 python3-docopt all 0.6.2-6 [26.1 kB]
+Get:5 http://ru.archive.ubuntu.com/ubuntu noble/universe amd64 python3-dotenv all 1.0.1-1 [22.3 kB]
+Get:6 http://ru.archive.ubuntu.com/ubuntu noble/universe amd64 python3-texttable all 1.6.7-1 [11.0 kB]
+Get:7 http://ru.archive.ubuntu.com/ubuntu noble/universe amd64 python3-compose all 1.29.2-6ubuntu1 [84.6 kB]
+Get:8 http://ru.archive.ubuntu.com/ubuntu noble/universe amd64 docker-compose all 1.29.2-6ubuntu1 [14.0 kB]
+Fetched 297 kB in 0s (665 kB/s)
+Selecting previously unselected package python3-websocket.
+(Reading database ... 83706 files and directories currently installed.)
+Preparing to unpack .../0-python3-websocket_1.7.0-1_all.deb ...
+Unpacking python3-websocket (1.7.0-1) ...
+Selecting previously unselected package python3-docker.
+Preparing to unpack .../1-python3-docker_5.0.3-1ubuntu1_all.deb ...
+Unpacking python3-docker (5.0.3-1ubuntu1) ...
+Selecting previously unselected package python3-dockerpty.
+Preparing to unpack .../2-python3-dockerpty_0.4.1-5_all.deb ...
+Unpacking python3-dockerpty (0.4.1-5) ...
+Selecting previously unselected package python3-docopt.
+Preparing to unpack .../3-python3-docopt_0.6.2-6_all.deb ...
+Unpacking python3-docopt (0.6.2-6) ...
+Selecting previously unselected package python3-dotenv.
+Preparing to unpack .../4-python3-dotenv_1.0.1-1_all.deb ...
+Unpacking python3-dotenv (1.0.1-1) ...
+Selecting previously unselected package python3-texttable.
+Preparing to unpack .../5-python3-texttable_1.6.7-1_all.deb ...
+Unpacking python3-texttable (1.6.7-1) ...
+Selecting previously unselected package python3-compose.
+Preparing to unpack .../6-python3-compose_1.29.2-6ubuntu1_all.deb ...
+Unpacking python3-compose (1.29.2-6ubuntu1) ...
+Selecting previously unselected package docker-compose.
+Preparing to unpack .../7-docker-compose_1.29.2-6ubuntu1_all.deb ...
+Unpacking docker-compose (1.29.2-6ubuntu1) ...
+Setting up python3-dotenv (1.0.1-1) ...
+Setting up python3-texttable (1.6.7-1) ...
+Setting up python3-docopt (0.6.2-6) ...
+Setting up python3-websocket (1.7.0-1) ...
+Setting up python3-dockerpty (0.4.1-5) ...
+Setting up python3-docker (5.0.3-1ubuntu1) ...
+Setting up python3-compose (1.29.2-6ubuntu1) ...
+Setting up docker-compose (1.29.2-6ubuntu1) ...
+Processing triggers for man-db (2.12.0-4build2) ...
+Scanning processes...
+Scanning linux images...
+
+Running kernel seems to be up-to-date.
+
+No services need to be restarted.
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+ki@ki:~$
+ki@ki:~$
+ki@ki:~$ sudo ss -ntlp
+State  Recv-Q Send-Q Local Address:Port  Peer Address:Port Process
+LISTEN 0      4096      127.0.0.54:53         0.0.0.0:*     users:(("systemd-resolve",pid=828,fd=17))
+LISTEN 0      4096   127.0.0.53%lo:53         0.0.0.0:*     users:(("systemd-resolve",pid=828,fd=15))
+LISTEN 0      4096       127.0.0.1:42355      0.0.0.0:*     users:(("containerd",pid=9844,fd=10))
+LISTEN 0      4096               *:22               *:*     users:(("sshd",pid=2592,fd=3),("systemd",pid=1,fd=88))
+ki@ki:~$
+ki@ki:~$
+ki@ki:~$ mkdir wordpress
+ki@ki:~$ ll
+total 40
+drwxr-x--- 6 ki   ki   4096 Jun  1 07:43 ./
+drwxr-xr-x 3 root root 4096 Jun  1 05:44 ../
+-rw------- 1 ki   ki    368 Jun  1 07:38 .bash_history
+-rw-r--r-- 1 ki   ki    220 Mar 31 08:41 .bash_logout
+-rw-r--r-- 1 ki   ki   3771 Mar 31 08:41 .bashrc
+drwx------ 2 ki   ki   4096 Jun  1 05:45 .cache/
+drwxrwxr-x 3 ki   ki   4096 Jun  1 06:38 .local/
+-rw-r--r-- 1 ki   ki    807 Mar 31 08:41 .profile
+drwx------ 2 ki   ki   4096 Jun  1 05:45 .ssh/
+-rw-r--r-- 1 ki   ki      0 Jun  1 05:48 .sudo_as_admin_successful
+drwxrwxr-x 2 ki   ki   4096 Jun  1 07:43 wordpress/
+ki@ki:~$
+ki@ki:~$
+ki@ki:~$ cd wordpress
+ki@ki:~/wordpress$ echo 'MYSQL_ROOT_PASSWORD=1qaz!QAZ
+MYSQL_USER=wp
+MYSQL_PASSWORD=1qaz!QAZ' > .env
+ki@ki:~/wordpress$
+ki@ki:~/wordpress$
+ki@ki:~/wordpress$ cat .env
+MYSQL_ROOT_PASSWORD=1qaz!QAZ
+MYSQL_USER=wp
+MYSQL_PASSWORD=1qaz!QAZ
+ki@ki:~/wordpress$
+ki@ki:~/wordpress$
+ki@ki:~/wordpress$ mkdir nginx-conf
+ki@ki:~/wordpress$ echo 'server {
+        listen 80;
+        listen [::]:80;
+        server_name example.com www.example.com;
+        index index.php index.html index.htm;
+        root /var/www/html;
+
+        location ~ /.well-known/acme-challenge {
+                allow all;
+                root /var/www/html;
+        }
+
+        location / {
+                try_files $uri $uri/ /index.php$is_args$args;
+        }
+
+        location ~ \.php$ {
+                try_files $uri =404;
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                fastcgi_pass wordpress:9000;
+                fastcgi_index index.php;
+                include fastcgi_params;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                fastcgi_param PATH_INFO $fastcgi_path_info;
+        }
+
+        location ~ /\.ht {
+                deny all;
+        }
+
+        location = /favicon.ico {
+                log_not_found off; access_log off;
+        }
+        location = /robots.txt {
+                log_not_found off; access_log off; allow all;
+        }
+        location ~* \.(css|gif|ico|jpeg|jpg|js|png)$ {
+                expires max;
+                log_not_found off;
+        }
+}' > nginx-conf/nginx.conf
+ki@ki:~/wordpress$
+ki@ki:~/wordpress$
+ki@ki:~/wordpress$
+ki@ki:~/wordpress$ cat nginx-conf/nginx.conf
+server {
+        listen 80;
+        listen [::]:80;
+        server_name example.com www.example.com;
+        index index.php index.html index.htm;
+        root /var/www/html;
+
+        location ~ /.well-known/acme-challenge {
+                allow all;
+                root /var/www/html;
+        }
+
+        location / {
+                try_files $uri $uri/ /index.php$is_args$args;
+        }
+
+        location ~ \.php$ {
+                try_files $uri =404;
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                fastcgi_pass wordpress:9000;
+                fastcgi_index index.php;
+                include fastcgi_params;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                fastcgi_param PATH_INFO $fastcgi_path_info;
+        }
+
+        location ~ /\.ht {
+                deny all;
+        }
+
+        location = /favicon.ico {
+                log_not_found off; access_log off;
+        }
+        location = /robots.txt {
+                log_not_found off; access_log off; allow all;
+        }
+        location ~* \.(css|gif|ico|jpeg|jpg|js|png)$ {
+                expires max;
+                log_not_found off;
+        }
+}
+ki@ki:~/wordpress$
+ki@ki:~/wordpress$
+ki@ki:~/wordpress$
+ki@ki:~/wordpress$ cat > docker-compose.yml
+version: '3'
+
+services:
+  db:
+    image: mysql:8.4
+    container_name: db
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - MYSQL_DATABASE=wordpress
+    volumes:
+      - dbdata:/var/lib/mysql
+    command: '--default-authentication-plugin=mysql_native_password'
+    networks:
+      - app-network
+
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress:6.5.3-php8.1-fpm-alpine
+    container_name: wordpress
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - WORDPRESS_DB_HOST=db:3306
+      - WORDPRESS_DB_USER=$MYSQL_USER
+      - WORDPRESS_DB_PASSWORD=$MYSQL_PASSWORD
+      - WORDPRESS_DB_NAME=wordpress
+    volumes:
+      - wordpress:/var/www/html
+    networks:
+      - app-network
+
+  webserver:
+    depends_on:
+      - wordpress
+    image: nginx:1.27.0-alpine
+    container_name: webserver
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - wordpress:/var/www/html
+      - ./nginx-conf:/etc/nginx/conf.d
+    networks:
+      - app-network
+volumes:
+  wordpress:
+  dbdata:
+
+networks:
+    app-network:
+      driver: bridge
+
+^C
+ki@ki:~/wordpress$ cat docker-compose.yml
+version:  '3'
+
+services:
+  db:
+    image: mysql:8.4
+    container_name: db
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - MYSQL_DATABASE=wordpress
+    volumes:
+      - dbdata:/var/lib/mysql
+    command: '--default-authentication-plugin=mysql_native_password'
+    networks:
+      - app-network
+
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress:6.5.3-php8.1-fpm-alpine
+    container_name: wordpress
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - WORDPRESS_DB_HOST=db:3306
+      - WORDPRESS_DB_USER=$MYSQL_USER
+      - WORDPRESS_DB_PASSWORD=$MYSQL_PASSWORD
+      - WORDPRESS_DB_NAME=wordpress
+    volumes:
+      - wordpress:/var/www/html
+    networks:
+      - app-network
+
+  webserver:
+    depends_on:
+      - wordpress
+    image: nginx:1.27.0-alpine
+    container_name: webserver
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - wordpress:/var/www/html
+      - ./nginx-conf:/etc/nginx/conf.d
+    networks:
+      - app-network
+volumes:
+  wordpress:
+  dbdata:
+
+networks:
+    app-network:
+      driver: bridge
+
+ki@ki:~/wordpress$ nano docker-compose.yml
+ki@ki:~/wordpress$
+ki@ki:~/wordpress$
+ki@ki:~/wordpress$ docker-compose up -d
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/docker/api/client.py", line 214, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/docker/api/daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/docker/utils/decorators.py", line 46, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/docker/api/client.py", line 237, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/requests/sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/requests/adapters.py", line 486, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 791, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 497, in _make_request
+    conn.request(
+TypeError: HTTPConnection.request() got an unexpected keyword argument 'chunked'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/bin/docker-compose", line 33, in <module>
+    sys.exit(load_entry_point('docker-compose==1.29.2', 'console_scripts', 'docker-compose')())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/cli/main.py", line 81, in main
+    command_func()
+  File "/usr/lib/python3/dist-packages/compose/cli/main.py", line 200, in perform_command
+    project = project_from_options('.', options)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/cli/command.py", line 60, in project_from_options
+    return get_project(
+           ^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/cli/command.py", line 152, in get_project
+    client = get_client(
+             ^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/cli/docker_client.py", line 41, in get_client
+    client = docker_client(
+             ^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/cli/docker_client.py", line 170, in docker_client
+    client = APIClient(use_ssh_client=not use_paramiko_ssh, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/docker/api/client.py", line 197, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/docker/api/client.py", line 221, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: HTTPConnection.request() got an unexpected keyword argument 'chunked'
+ki@ki:~/wordpress$ sudo docker-compose up -d
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/docker/api/client.py", line 214, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/docker/api/daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/docker/utils/decorators.py", line 46, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/docker/api/client.py", line 237, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/requests/sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/requests/adapters.py", line 486, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 791, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 497, in _make_request
+    conn.request(
+TypeError: HTTPConnection.request() got an unexpected keyword argument 'chunked'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/bin/docker-compose", line 33, in <module>
+    sys.exit(load_entry_point('docker-compose==1.29.2', 'console_scripts', 'docker-compose')())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/cli/main.py", line 81, in main
+    command_func()
+  File "/usr/lib/python3/dist-packages/compose/cli/main.py", line 200, in perform_command
+    project = project_from_options('.', options)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/cli/command.py", line 60, in project_from_options
+    return get_project(
+           ^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/cli/command.py", line 152, in get_project
+    client = get_client(
+             ^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/cli/docker_client.py", line 41, in get_client
+    client = docker_client(
+             ^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/cli/docker_client.py", line 170, in docker_client
+    client = APIClient(use_ssh_client=not use_paramiko_ssh, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/docker/api/client.py", line 197, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/docker/api/client.py", line 221, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: HTTPConnection.request() got an unexpected keyword argument 'chunked'
+ki@ki:~/wordpress$

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+directory=$1
+
+hidden_count=$(ls -A $directory | grep '^\.' | wc -l)
+echo "Hidden files in $directory found: $hidden_count"
