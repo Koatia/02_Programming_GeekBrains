@@ -17,7 +17,8 @@ public class UserList {
     }
 
     public static ArrayList<String> spawnList() {
-        ArrayList<String> list = new ArrayList<>(Arrays.asList("2", "3", "список", "2", "3", "список", "2", "3", "список", "2", "3", "список"));
+        ArrayList<String> list = new ArrayList<>(
+                Arrays.asList("2", "3", "список", "2", "3", "список", "2", "3", "список", "2", "3", "список"));
         return list;
     }
 

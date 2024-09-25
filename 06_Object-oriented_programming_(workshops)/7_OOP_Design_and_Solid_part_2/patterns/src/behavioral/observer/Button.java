@@ -24,12 +24,12 @@ public class Button implements Observable {
 
     @Override
     public void notifyObservers() {
-        for (Observer observer: observers){
+        for (Observer observer : observers) {
             observer.update(this);
         }
     }
 
-    public void onClick(/*Event event*/){
+    public void onClick(/*Event event*/) {
         //do something
         notifyObservers(/*event*/);
     }

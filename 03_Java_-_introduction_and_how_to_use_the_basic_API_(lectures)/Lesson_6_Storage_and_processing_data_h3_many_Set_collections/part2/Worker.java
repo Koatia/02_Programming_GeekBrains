@@ -16,6 +16,7 @@ public class Worker {
         var t = (Worker) o;
         return id == t.id && firstName == t.firstName;
     }
+
     @Override
     public int hashCode() {
         return id;

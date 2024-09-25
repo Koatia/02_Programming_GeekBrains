@@ -10,14 +10,17 @@ public class Seminar1_8 {
 
         if (checkArray(arr))
             System.out.println("Array is OK");
-        else System.out.println("Array is not OK");
+        else
+            System.out.println("Array is not OK");
     }
 
     public static boolean checkArray(int[][] arr) {
         int rows = arr.length;
-        if (rows == 0) return true;
+        if (rows == 0)
+            return true;
         for (int i = 0; i < rows; i++) {
-            if (arr[i].length != arr[0].length) return false;
+            if (arr[i].length != arr[0].length)
+                return false;
         }
         return true;
     }

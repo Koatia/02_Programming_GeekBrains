@@ -60,11 +60,14 @@ public class HomeWork {
         String[] arr2 = str2.split(" ");
         br.close();
 
-        int a = Integer.parseInt(arr1[0].substring(0, arr1[0].indexOf("x"))) + Integer.parseInt(arr2[0].substring(0, arr2[0].indexOf("x")));
-        int b = Integer.parseInt(arr1[1] + arr1[2].substring(0, arr1[2].indexOf("x"))) + Integer.parseInt(arr2[1] + arr2[2].substring(0, arr2[2].indexOf("x")));
+        int a = Integer.parseInt(arr1[0].substring(0, arr1[0].indexOf("x"))) +
+                Integer.parseInt(arr2[0].substring(0, arr2[0].indexOf("x")));
+        int b = Integer.parseInt(arr1[1] + arr1[2].substring(0, arr1[2].indexOf("x"))) +
+                Integer.parseInt(arr2[1] + arr2[2].substring(0, arr2[2].indexOf("x")));
         int c = Integer.parseInt(arr1[3] + arr1[4]) + Integer.parseInt(arr2[3] + arr2[4]);
 
-        String res = "(" + str1.substring(0, str1.length() - 4) + ") + (" + str2.substring(0, str2.length() - 4) + ") = ";
+        String res =
+                "(" + str1.substring(0, str1.length() - 4) + ") + (" + str2.substring(0, str2.length() - 4) + ") = ";
         res += a + "x^2 ";
         res += (b >= 0 ? "+ " : "- ") + Math.abs(b) + "x ";
         res += (c >= 0 ? "+ " : "- ") + Math.abs(c) + "\n";
@@ -76,4 +79,3 @@ public class HomeWork {
         fw3.close();
     }
 }
-

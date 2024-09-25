@@ -33,9 +33,7 @@ public class HomeWork2 {
             // При отправке кода на Выполнение, вы можете варьировать эти параметры
             arr = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9};
         } else {
-            arr = Arrays.stream(args[0].split(", "))
-                    .map(Integer::parseInt)
-                    .toArray(Integer[]::new);
+            arr = Arrays.stream(args[0].split(", ")).map(Integer::parseInt).toArray(Integer[]::new);
         }
 
         Answer ans = new Answer();

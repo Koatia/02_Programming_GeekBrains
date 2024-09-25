@@ -35,8 +35,7 @@ public class Ex004_bFile {
                 b2 = stream.read(binText);
                 if (b1 != binWord.length || b2 != binText.length)
                     throw new IOException("Error read file");
-                data.put(new String(binWord, charset),
-                        new String(binText, charset));
+                data.put(new String(binWord, charset), new String(binText, charset));
             }
         }
     }

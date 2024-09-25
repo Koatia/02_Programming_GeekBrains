@@ -22,8 +22,8 @@ class NamesCounter {
     public void showNamesOccurrences() {
         // Введите свое решение ниже
         System.out.println(names.toString());
-        }
     }
+}
 
 
 // Не удаляйте и не меняйте метод Main!

@@ -6,15 +6,11 @@ import java.util.stream.Collectors;
 
 public class LaptopMain2 {
     public static void main(String[] args) {
-        Set<Laptop> laptops = new HashSet<>(Arrays.asList(
-                new Laptop("AMD", 16, 1000, 15, "Windows"),
-                new Laptop("AMD", 8, 500, 14, "Windows"),
-                new Laptop("AMD", 8, 500, 14, "Linux"),
-                new Laptop("Intel", 16, 500, 14, "Windows"),
-                new Laptop("Intel", 32, 1000, 15, "Windows"),
-                new Laptop("Intel", 8, 500, 14, "Linux"),
-                new Laptop("AMD", 16, 500, 14, "Linux"),
-                new Laptop("Intel", 16, 500, 14, "MacOS")));
+        Set<Laptop> laptops = new HashSet<>(
+                Arrays.asList(new Laptop("AMD", 16, 1000, 15, "Windows"), new Laptop("AMD", 8, 500, 14, "Windows"),
+                        new Laptop("AMD", 8, 500, 14, "Linux"), new Laptop("Intel", 16, 500, 14, "Windows"),
+                        new Laptop("Intel", 32, 1000, 15, "Windows"), new Laptop("Intel", 8, 500, 14, "Linux"),
+                        new Laptop("AMD", 16, 500, 14, "Linux"), new Laptop("Intel", 16, 500, 14, "MacOS")));
 
         laptops.forEach(System.out::println);
 
@@ -52,9 +48,9 @@ public class LaptopMain2 {
         return input.isEmpty() ? null : input;
     }
 
-    private static void filterLaptops(Set<Laptop> laptops, int minRam, int minStorage, int minScreenSize, String desiredCpu, String desiredOS) {
-        Set<Laptop> filteredLaptops = laptops.stream()
-                .filter(laptop -> laptop.getRam() >= minRam)
+    private static void filterLaptops(Set<Laptop> laptops, int minRam, int minStorage, int minScreenSize,
+                                      String desiredCpu, String desiredOS) {
+        Set<Laptop> filteredLaptops = laptops.stream().filter(laptop -> laptop.getRam() >= minRam)
                 .filter(laptop -> laptop.getStorage() >= minStorage)
                 .filter(laptop -> laptop.getScreenSize() >= minScreenSize)
                 .filter(laptop -> desiredCpu == null || laptop.getCpu().equalsIgnoreCase(desiredCpu))

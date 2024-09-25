@@ -13,34 +13,34 @@ public class Service {
         builder = new StudentBuilder();
     }
 
-    public void addStudent(String name, int age){
+    public void addStudent(String name, int age) {
         Student student = builder.build(name, age);
         group.addStudent(student);
     }
 
-    public String getStudentListInfo(){
+    public String getStudentListInfo() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Список студентов:\n");
 
-//        Iterator<Student> iterator = group.iterator();
-//        while (iterator.hasNext()){
-//            Student student = iterator.next();
-//            stringBuilder.append(student);
-//            stringBuilder.append("\n");
-//        }
+        //        Iterator<Student> iterator = group.iterator();
+        //        while (iterator.hasNext()){
+        //            Student student = iterator.next();
+        //            stringBuilder.append(student);
+        //            stringBuilder.append("\n");
+        //        }
 
-        for (Student student: group){
+        for (Student student : group) {
             stringBuilder.append(student);
             stringBuilder.append("\n");
         }
         return stringBuilder.toString();
     }
 
-    public void sortByName(){
+    public void sortByName() {
         group.sortByName();
     }
 
-    public void sortByAge(){
+    public void sortByAge() {
         group.sortByAge();
     }
 

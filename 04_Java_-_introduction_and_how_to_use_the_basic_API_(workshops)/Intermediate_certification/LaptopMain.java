@@ -3,18 +3,14 @@ import java.util.stream.Collectors;
 
 public class LaptopMain {
     public static void main(String[] args) {
-        HashSet<Laptop> laptops = new HashSet<>(Arrays.asList(
-                new Laptop("AMD", 16, 1000, 15, "Windows"),
-                new Laptop("AMD", 8, 500, 14, "Windows"),
-                new Laptop("AMD", 8, 500, 14, "Linux"),
-                new Laptop("Intel", 16, 500, 14, "Windows"),
-                new Laptop("Intel", 32, 1000, 15, "Windows"),
-                new Laptop("Intel", 8, 500, 14, "Linux"),
-                new Laptop("AMD", 16, 500, 14, "Linux"),
-                new Laptop("Intel", 16, 500, 14, "MacOS")));
-//        for (Laptop laptop : laptops) {
-//            System.out.println(laptop);
-//        }
+        HashSet<Laptop> laptops = new HashSet<>(
+                Arrays.asList(new Laptop("AMD", 16, 1000, 15, "Windows"), new Laptop("AMD", 8, 500, 14, "Windows"),
+                        new Laptop("AMD", 8, 500, 14, "Linux"), new Laptop("Intel", 16, 500, 14, "Windows"),
+                        new Laptop("Intel", 32, 1000, 15, "Windows"), new Laptop("Intel", 8, 500, 14, "Linux"),
+                        new Laptop("AMD", 16, 500, 14, "Linux"), new Laptop("Intel", 16, 500, 14, "MacOS")));
+        //        for (Laptop laptop : laptops) {
+        //            System.out.println(laptop);
+        //        }
         laptops.forEach(System.out::println);
 
         choiceLaptop(laptops);
@@ -42,7 +38,8 @@ public class LaptopMain {
             for (Map.Entry<Integer, String> entry : specs.entrySet()) {
                 System.out.println(entry.getKey() + ". " + entry.getValue());
             }
-            System.out.print("\nВведите цифру, соответствующую необходимому критерию\n(для подбора по введенным параметрам введите любое число другое число): ");
+            System.out.print(
+                    "\nВведите цифру, соответствующую необходимому критерию\n(для подбора по введенным параметрам введите любое число другое число): ");
             choice = scanner.nextInt();
             if (choice == 1) {
                 System.out.print("Укажите минимальный объем оперативной памяти (GB): ");
@@ -65,9 +62,9 @@ public class LaptopMain {
         filterLaptop(laptops, minRam, minStorage, minScreenSize, desiredCpu, desiredOS);
     }
 
-    private static void filterLaptop(HashSet<Laptop> laptops, int minRam, int minStorage, int minScreenSize, String desiredCpu, String desiredOS) {
-        Set<Laptop> filteredLaptops = laptops.stream()
-                .filter(laptop -> laptop.getRam() >= minRam)
+    private static void filterLaptop(HashSet<Laptop> laptops, int minRam, int minStorage, int minScreenSize,
+                                     String desiredCpu, String desiredOS) {
+        Set<Laptop> filteredLaptops = laptops.stream().filter(laptop -> laptop.getRam() >= minRam)
                 .filter(laptop -> laptop.getStorage() >= minStorage)
                 .filter(laptop -> laptop.getScreenSize() >= minScreenSize)
                 .filter(laptop -> desiredCpu.isEmpty() || laptop.getCpu().equalsIgnoreCase(desiredCpu))

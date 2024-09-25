@@ -33,10 +33,6 @@ public class BusinessCard {
 
     @Override
     public String toString() {
-        return "BusinessCard{" +
-                "name='" + name + '\'' +
-                ", size=" + Arrays.toString(size) +
-                ", price=" + price +
-                '}';
+        return "BusinessCard{" + "name='" + name + '\'' + ", size=" + Arrays.toString(size) + ", price=" + price + '}';
     }
 }

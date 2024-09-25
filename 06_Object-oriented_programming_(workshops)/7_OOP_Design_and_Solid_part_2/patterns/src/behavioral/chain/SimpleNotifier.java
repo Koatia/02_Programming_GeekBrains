@@ -1,6 +1,6 @@
 package behavioral.chain;
 
-public class SimpleNotifier extends Notifier{
+public class SimpleNotifier extends Notifier {
     public SimpleNotifier(int priority) {
         super(priority);
     }

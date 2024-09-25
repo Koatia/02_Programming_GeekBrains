@@ -1,6 +1,6 @@
 package study_group.student;
 
-public class Student implements Comparable<Student>{
+public class Student implements Comparable<Student> {
     private int id;
     private String name;
     private int age;
@@ -25,11 +25,7 @@ public class Student implements Comparable<Student>{
 
     @Override
     public String toString() {
-        return "Student{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", age=" + age +
-                '}';
+        return "Student{" + "id=" + id + ", name='" + name + '\'' + ", age=" + age + '}';
     }
 
     @Override

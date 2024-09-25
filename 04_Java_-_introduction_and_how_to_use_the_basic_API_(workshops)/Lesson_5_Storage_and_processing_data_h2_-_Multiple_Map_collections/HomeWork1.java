@@ -15,6 +15,11 @@ import java.util.HashMap;
 class PhoneBook {
     private static HashMap<String, ArrayList<Integer>> phoneBook = new HashMap<>();
 
+    public static HashMap<String, ArrayList<Integer>> getPhoneBook() {
+        // Введите свое решение ниже
+        return phoneBook;
+    }
+
     public void add(String name, Integer phoneNum) {
         // Введите свое решение ниже
         if (phoneBook.containsKey(name)) {
@@ -33,11 +38,6 @@ class PhoneBook {
         } else {
             return new ArrayList<>();
         }
-    }
-
-    public static HashMap<String, ArrayList<Integer>> getPhoneBook() {
-        // Введите свое решение ниже
-        return phoneBook;
     }
 }
 

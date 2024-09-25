@@ -31,13 +31,13 @@ public class Seminar1_3 {
         for (int row[] : matrix) {
             if (row.length != n)
                 return -1;
-//                throw new RuntimeException("Массив не квадратный");
+            //                throw new RuntimeException("Массив не квадратный");
         }
         for (int row[] : matrix) {
             for (int element = 0; element < row.length; element++) {
                 if (row[element] != 0 && row[element] != 1)
                     return -2;
-//                    throw new RuntimeException("В массиве есть не 0 и не 1");
+                //                    throw new RuntimeException("В массиве есть не 0 и не 1");
             }
         }
         int sum = 0;

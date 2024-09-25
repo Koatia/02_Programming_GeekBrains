@@ -13,8 +13,8 @@ public class ZooNoise {
         noise.add(new Radio());
     }
 
-    public void speakAll(){
-        for (Speakable speakable: noise){
+    public void speakAll() {
+        for (Speakable speakable : noise) {
             speakable.speak();
         }
     }

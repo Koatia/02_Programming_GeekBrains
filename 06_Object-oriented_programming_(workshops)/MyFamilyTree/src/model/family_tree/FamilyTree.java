@@ -12,8 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 
 public class FamilyTree<E extends TreeNode<E>> implements Serializable, Iterable<E> {
-    private int itemId;
     private final List<E> humanList;
+    private int itemId;
 
     //  Constructor:
     public FamilyTree() {
@@ -175,7 +175,8 @@ public class FamilyTree<E extends TreeNode<E>> implements Serializable, Iterable
 
         if (human == null) {
             sb.append("Нет человека с таким id\n");
-        } else sb.append(human).append("\n");
+        } else
+            sb.append(human).append("\n");
 
         return sb.toString();
     }

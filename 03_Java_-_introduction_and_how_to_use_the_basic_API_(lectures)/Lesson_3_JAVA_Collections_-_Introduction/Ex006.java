@@ -9,6 +9,6 @@ public class Ex006 {
         System.out.println(list1);
         list1.remove(1); // java.lang.UnsupportedOperationException
         List<Character> list2 = List.copyOf(list1);
-        
+
     }
 }

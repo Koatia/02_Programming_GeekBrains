@@ -80,11 +80,9 @@ public class HomeWork2 {
 
         if (args.length == 0) {
             // При отправке кода на Выполнение, вы можете варьировать эти параметры
-            arr = new int[] { 9, 3, 4, 8, 2, 5, 7, 1, 6, 10 };
+            arr = new int[]{9, 3, 4, 8, 2, 5, 7, 1, 6, 10};
         } else {
-            arr = Arrays.stream(args[0].split(", "))
-                    .mapToInt(Integer::parseInt)
-                    .toArray();
+            arr = Arrays.stream(args[0].split(", ")).mapToInt(Integer::parseInt).toArray();
         }
 
         BubbleSort ans = new BubbleSort();

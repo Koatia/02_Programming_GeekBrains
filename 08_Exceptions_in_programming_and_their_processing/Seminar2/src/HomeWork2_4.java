@@ -16,7 +16,7 @@ Result: Your input was - 0
 class Simvol {
 
     public static String expr(char a) throws Exception {
-// Введите свое решение ниже
+        // Введите свое решение ниже
         if (a == ' ') {
             throw new Exception("Empty string has been input.");
         } else {

@@ -1,4 +1,5 @@
 package Lesson_04;
+
 import java.util.PriorityQueue;
 
 public class Ex000 {
@@ -14,8 +15,7 @@ public class Ex000 {
         System.out.println(pq.poll());
         System.out.println(pq.poll());
         System.out.println(pq.poll());
-       
+
 
     }
 }
-

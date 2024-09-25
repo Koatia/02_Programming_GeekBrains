@@ -8,7 +8,7 @@ public class GetStudentsInfo extends Command {
         description = "Получить список студентов";
     }
 
-    public void execute(){
+    public void execute() {
         consoleUI.getStudentsListInfo();
     }
 }

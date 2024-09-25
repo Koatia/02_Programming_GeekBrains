@@ -19,36 +19,36 @@ public class Laptop {
         return cpu;
     }
 
-    public int getRam() {
-        return ram;
-    }
-
-    public int getStorage() {
-        return storage;
-    }
-
-    public int getScreenSize() {
-        return screenSize;
-    }
-
-    public String getOperationSystem() {
-        return operationSystem;
-    }
-
     public void setCpu(String cpu) {
         this.cpu = cpu;
+    }
+
+    public int getRam() {
+        return ram;
     }
 
     public void setRam(int ram) {
         this.ram = ram;
     }
 
+    public int getStorage() {
+        return storage;
+    }
+
     public void setStorage(int storage) {
         this.storage = storage;
     }
 
+    public int getScreenSize() {
+        return screenSize;
+    }
+
     public void setScreenSize(int screenSize) {
         this.screenSize = screenSize;
+    }
+
+    public String getOperationSystem() {
+        return operationSystem;
     }
 
     public void setOperationSystem(String operationSystem) {
@@ -57,17 +57,16 @@ public class Laptop {
 
     @Override
     public String toString() {
-        return "Процессор: '" + cpu +
-                "',\tОперативная память: " + ram +
-                "GB,\tНакопитель: " + storage +
-                "GB,\tРазмер экрана: " + screenSize +
-                "inch,\tОперационная система: '" + operationSystem + "'";
+        return "Процессор: '" + cpu + "',\tОперативная память: " + ram + "GB,\tНакопитель: " + storage +
+                "GB,\tРазмер экрана: " + screenSize + "inch,\tОперационная система: '" + operationSystem + "'";
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Laptop laptop = (Laptop) o;
         return ram == laptop.ram && storage == laptop.storage && screenSize == laptop.screenSize &&
                 cpu.equals(laptop.cpu) && operationSystem.equals(laptop.operationSystem);

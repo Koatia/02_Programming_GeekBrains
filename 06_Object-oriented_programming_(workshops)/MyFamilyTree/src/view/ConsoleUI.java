@@ -37,7 +37,8 @@ public class ConsoleUI implements View {
 
     @Override
     public void start() {
-        System.out.print("\033[H\033[J");// ru.stackoverflow.com/questions/1315049/Как-очистить-консоль-в-java-во-время-действия-программы
+        System.out.print(
+                "\033[H\033[J");// ru.stackoverflow.com/questions/1315049/Как-очистить-консоль-в-java-во-время-действия-программы
         this.printAnswerLn("\nДобрый день!\nВыберите пункт меню:\n");
         while (check) {
             printMenu();
@@ -57,7 +58,8 @@ public class ConsoleUI implements View {
         }
         if (choice == menu.size()) {
             return false;
-        } else return true;
+        } else
+            return true;
     }
 
     private void printMenu() {
@@ -170,8 +172,10 @@ public class ConsoleUI implements View {
             String str = scanner.nextLine();
             if (str.matches("[0-9]{1}")) {
                 int numGender = Integer.parseInt(str);
-                if (numGender == 1) return Gender.Male;
-                if (numGender == 2) return Gender.Female;
+                if (numGender == 1)
+                    return Gender.Male;
+                if (numGender == 2)
+                    return Gender.Female;
             }
         }
     }
@@ -211,7 +215,8 @@ public class ConsoleUI implements View {
             int id = checkInt(s);
             if (presenter.checkId(id)) {
                 return id;
-            } else printAnswer("Человек с таким id не найден. Введите другое значение id: ");
+            } else
+                printAnswer("Человек с таким id не найден. Введите другое значение id: ");
         }
     }
 }

@@ -23,12 +23,9 @@ public class Weather {
 
     @Override
     public String toString() {
-        return  "city='" + location.getName() + '\'' + '\n' +
-                "temperature=" + current.getTemperature() + '\n' +
-                "observation_time='" + current.getObservation_time() + '\'' + '\n' +
-                "pressure=" + current.getPressure() + '\n' +
-                "humidity=" + current.getHumidity() + '\n' +
-                "lat='" + location.getLat() + '\'' + '\n' +
-                "lon='" + location.getLon() + '\'';
+        return "city='" + location.getName() + '\'' + '\n' + "temperature=" + current.getTemperature() + '\n' +
+                "observation_time='" + current.getObservation_time() + '\'' + '\n' + "pressure=" +
+                current.getPressure() + '\n' + "humidity=" + current.getHumidity() + '\n' + "lat='" +
+                location.getLat() + '\'' + '\n' + "lon='" + location.getLon() + '\'';
     }
 }

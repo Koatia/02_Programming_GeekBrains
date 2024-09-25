@@ -25,26 +25,26 @@ public class Human implements TreeNode<Human> {
         this.children = new ArrayList<>();
     }
 
-//    public Human(String name, Gender gender, LocalDate birthDate, LocalDate deathDate, Human father, Human mother, Human spouse) {
-//        id = -1;
-//        this.name = name;
-//        this.gender = gender;
-//        this.birthDate = birthDate;
-//        this.deathDate = deathDate;
-//        parents = new ArrayList<>();
-//        if (father != null) {
-//            parents.add(father);
-//        }
-//        if (mother != null) {
-//            parents.add(mother);
-//        }
-//        this.spouse = spouse;
-//        children = new ArrayList<>();
-//    }
-//
-//    public Human(String name, Gender gender, LocalDate birthDate) {
-//        this(name, gender, birthDate, null, null, null, null);
-//    }
+    //    public Human(String name, Gender gender, LocalDate birthDate, LocalDate deathDate, Human father, Human mother, Human spouse) {
+    //        id = -1;
+    //        this.name = name;
+    //        this.gender = gender;
+    //        this.birthDate = birthDate;
+    //        this.deathDate = deathDate;
+    //        parents = new ArrayList<>();
+    //        if (father != null) {
+    //            parents.add(father);
+    //        }
+    //        if (mother != null) {
+    //            parents.add(mother);
+    //        }
+    //        this.spouse = spouse;
+    //        children = new ArrayList<>();
+    //    }
+    //
+    //    public Human(String name, Gender gender, LocalDate birthDate) {
+    //        this(name, gender, birthDate, null, null, null, null);
+    //    }
 
     //  Method:
     //  Getters:
@@ -52,20 +52,41 @@ public class Human implements TreeNode<Human> {
         return id;
     }
 
+    //  Setters:
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Gender getGender() {
         return gender;
     }
 
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
     public LocalDate getBirthDate() {
         return birthDate;
     }
 
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
     public LocalDate getDeathDate() {
         return deathDate;
+    }
+
+    public void setDeathDate(LocalDate deathDate) {
+        this.deathDate = deathDate;
     }
 
     public int getPeriod(LocalDate date1, LocalDate date2) {
@@ -107,34 +128,13 @@ public class Human implements TreeNode<Human> {
         return spouse;
     }
 
-    public List<Human> getChildren() {
-        return children;
-    }
-
-    //  Setters:
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
-    }
-
-    public void setDeathDate(LocalDate deathDate) {
-        this.deathDate = deathDate;
-    }
-
     public void setSpouse(Human spouse) {
         this.spouse = spouse;
         spouse.spouse = this;
+    }
+
+    public List<Human> getChildren() {
+        return children;
     }
 
     public void initParents() {
@@ -160,7 +160,8 @@ public class Human implements TreeNode<Human> {
     }
 
     public boolean equals(Object obj) {
-        if (this == obj) return true;
+        if (this == obj)
+            return true;
         if (!(obj instanceof Human human)) {
             return false;
         }

@@ -15,15 +15,15 @@ public class VendingMachine {
         productList = new ArrayList<>();
     }
 
-    public void addProduct(Product product){
+    public void addProduct(Product product) {
         product.setId(productId++);
         productList.add(product);
     }
 
-    public String getProductsInfo(){
+    public String getProductsInfo() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Список продуктов:\n");
-        for (Product product: productList){
+        for (Product product : productList) {
             stringBuilder.append(product);
             stringBuilder.append("\n");
         }

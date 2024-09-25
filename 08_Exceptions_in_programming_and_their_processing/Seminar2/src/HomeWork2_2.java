@@ -60,7 +60,8 @@ class Expr {
         // Введите свое решение ниже
         double result = Float.NaN;
         if (intArray.length < 9) {
-            System.out.println("It's not possible to evaluate the expression - intArray[8] / d as there is no 8th element in the given array.");
+            System.out.println(
+                    "It's not possible to evaluate the expression - intArray[8] / d as there is no 8th element in the given array.");
         } else if (d == 0) {
             System.out.println("It's not possible to evaluate the expression - intArray[8] / d as d = 0.");
         } else {

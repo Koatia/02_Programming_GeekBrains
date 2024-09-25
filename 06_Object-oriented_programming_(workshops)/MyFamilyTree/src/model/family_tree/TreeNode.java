@@ -12,7 +12,12 @@ public interface TreeNode<T> extends Serializable {
     //  Getters:
     int getId();
 
+    //  Setters:
+    void setId(int id);
+
     LocalDate getBirthDate();
+
+    void setBirthDate(LocalDate birthDate);
 
     int getAge();
 
@@ -26,14 +31,9 @@ public interface TreeNode<T> extends Serializable {
 
     T getSpouse();
 
-    //  Setters:
-    void setId(int id);
-
-    void setBirthDate(LocalDate birthDate);
+    void setSpouse(T human);
 
     void setDeathDate(LocalDate deathDate);
-
-    void setSpouse(T human);
 
     void addParent(T human);
 

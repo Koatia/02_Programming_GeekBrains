@@ -10,7 +10,7 @@ public class Connection {
     private static final String apiKey = "eceae5bae9142cc79ef4bb4199703b7f";
     //http://api.weatherstack.com/current?access_key=eceae5bae9142cc79ef4bb4199703b7f&query=moscow
 
-    public String getJson(String city) throws Exception{
+    public String getJson(String city) throws Exception {
         StringBuilder stringBuilder = new StringBuilder();
 
         URL url = new URL("http://api.weatherstack.com/current?access_key=" + apiKey + "&query=" + city);

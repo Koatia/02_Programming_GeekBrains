@@ -3,12 +3,14 @@ package creational.builder.builder;
 public abstract class BusinessCardBuilder {
     private BusinessCard card;
 
-    void createCard(){
+    void createCard() {
         card = new BusinessCard();
     }
 
     abstract void buildName();
+
     abstract void buildPrice();
+
     abstract void buildSize();
 
     BusinessCard getCard() {

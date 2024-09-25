@@ -1,4 +1,3 @@
-
 public class ExampleStringBuilder {
 
     public static void main(String[] args) {

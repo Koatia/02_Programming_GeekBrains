@@ -24,8 +24,9 @@ public class UniqueNumbers {
 
     public static double getPercentUniqueElem(int[] arr) {
         Set<Integer> uniqueElem = new HashSet<>();
-        for (int num : arr) uniqueElem.add(num);
-        double res =  (double) uniqueElem.size() * 100 / arr.length;
+        for (int num : arr)
+            uniqueElem.add(num);
+        double res = (double) uniqueElem.size() * 100 / arr.length;
         return res;
     }
 }

@@ -36,10 +36,10 @@ public class Ex001_Program {
         // System.out.println(w3);
         //#endregion
 
-        System.out.println(w1==w4);
+        System.out.println(w1 == w4);
         System.out.println(w1.equals(w4));
         var workers = new HashSet<Worker>(Arrays.asList(w1, w2, w3));
         System.out.println(workers.contains(w4));
-        
+
     }
 }

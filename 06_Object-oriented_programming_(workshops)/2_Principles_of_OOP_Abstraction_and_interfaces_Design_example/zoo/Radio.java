@@ -3,7 +3,7 @@ package zoo;
 public class Radio implements Speakable {
 
     @Override
-    public void speak(){
+    public void speak() {
         System.out.println("рекламная пауза");
     }
 }

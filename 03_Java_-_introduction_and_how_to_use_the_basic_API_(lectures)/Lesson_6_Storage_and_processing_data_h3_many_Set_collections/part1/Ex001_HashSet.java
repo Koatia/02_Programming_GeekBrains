@@ -5,8 +5,11 @@ import java.util.*;
 public class Ex001_HashSet {
     public static void main(String[] args) {
         Set<Integer> set = new HashSet<>();
-        set.add(1); set.add(12); set.add(123);
-        set.add(1234); set.add(1234);
+        set.add(1);
+        set.add(12);
+        set.add(123);
+        set.add(1234);
+        set.add(1234);
         System.out.println(set.contains(12)); // true
         set.add(null);
         System.out.println(set.size()); // 5

@@ -47,7 +47,7 @@ public class ContentFloder {
     public static void setLogger() {
         try {
             FileHandler fileHandler = new FileHandler("loging.txt", false); // true - append to file, false -
-                                                                            // overwritext file
+            // overwritext file
             logger.addHandler(fileHandler);
             SimpleFormatter sf = new SimpleFormatter();
             fileHandler.setFormatter(sf);

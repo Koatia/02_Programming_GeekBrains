@@ -5,7 +5,7 @@ public class SeniorDeveloper extends DeveloperDecorator {
         super(developer);
     }
 
-    String makeReview(){
+    String makeReview() {
         return "Делаю проверку кода.";
     }
 

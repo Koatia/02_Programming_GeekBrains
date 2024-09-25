@@ -15,20 +15,20 @@ public class Cat {
         return name;
     }
 
-    public int getAge() {
-        return age;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
 
+    public int getAge() {
+        return age;
+    }
+
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     public void setColor(String color) {
@@ -43,8 +43,10 @@ public class Cat {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Cat cat = (Cat) o;
         return age == cat.age && Objects.equals(name, cat.name) && Objects.equals(color, cat.color);
     }

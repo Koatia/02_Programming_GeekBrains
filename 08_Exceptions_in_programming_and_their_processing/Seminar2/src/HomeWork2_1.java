@@ -8,7 +8,7 @@ Your input is not a float number. Please, try again.
 
 class IsFloat {
     public static float isFloat(String input) {
-// Введите свое решение ниже
+        // Введите свое решение ниже
         float result = Float.NaN;
         try {
             result = Float.parseFloat(input);
@@ -24,7 +24,7 @@ public class HomeWork2_1 {
     public static void main(String[] args) {
         String input;
 
-// При отправке кода на Выполнение, вы можете варьировать эти параметры
+        // При отправке кода на Выполнение, вы можете варьировать эти параметры
         if (args.length == 0) {
             input = "3.14"; // По умолчанию используем "3.14", если аргумент не передан
         } else {

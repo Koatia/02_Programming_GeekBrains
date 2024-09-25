@@ -15,7 +15,7 @@ public class StudyGroup<E extends GroupItem> implements Iterable<E> {
         studentList = new ArrayList<>();
     }
 
-    public void addStudent(E student){
+    public void addStudent(E student) {
 
         studentList.add(student);
     }
@@ -25,11 +25,11 @@ public class StudyGroup<E extends GroupItem> implements Iterable<E> {
         return new StudentIterator<>(studentList);
     }
 
-    public void sortByName(){
+    public void sortByName() {
         studentList.sort(new StudentComparatorByName<>());
     }
 
-    public void sortByAge(){
+    public void sortByAge() {
         studentList.sort(new StudentComparatorByAge<>());
     }
 }

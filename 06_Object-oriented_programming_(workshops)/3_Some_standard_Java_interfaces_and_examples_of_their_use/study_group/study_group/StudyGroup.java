@@ -15,7 +15,7 @@ public class StudyGroup implements Iterable<Student> {
         studentList = new ArrayList<>();
     }
 
-    public void addStudent(Student student){
+    public void addStudent(Student student) {
         studentList.add(student);
     }
 
@@ -23,11 +23,11 @@ public class StudyGroup implements Iterable<Student> {
         this.studentList = studentList;
     }
 
-    public void sortByName(){
+    public void sortByName() {
         studentList.sort(new StudentComparatorByName());
     }
 
-    public void sortByAge(){
+    public void sortByAge() {
         studentList.sort(new StudentComparatorByAge());
     }
 

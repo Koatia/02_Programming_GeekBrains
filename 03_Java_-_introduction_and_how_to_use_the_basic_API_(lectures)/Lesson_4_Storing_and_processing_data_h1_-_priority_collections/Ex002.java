@@ -21,6 +21,6 @@ public class Ex002 {
         item = queue.remove();
         System.out.println(queue); // [2809]
         System.out.println(queue.peek());
-        
+
     }
 }

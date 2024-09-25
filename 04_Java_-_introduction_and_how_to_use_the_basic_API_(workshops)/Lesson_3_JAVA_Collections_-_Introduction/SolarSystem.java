@@ -13,7 +13,7 @@ public class SolarSystem {
         List<String> planets = getPlanetsList();
         System.out.println(planets);
         printCountPlanets(planets);
-//        removeDoublePlanets2(planets);
+        //        removeDoublePlanets2(planets);
         removeDoublePlanets2(planets);
 
         System.out.println(planets);

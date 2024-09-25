@@ -35,13 +35,15 @@ public class HumanBuilder {
     }
 
     public HumanBuilder addChild(Human child) {
-        if (human.getChildren() == null) human.initChildren();
+        if (human.getChildren() == null)
+            human.initChildren();
         human.addChild(child);
         return this;
     }
 
     public HumanBuilder addParent(Human parent) {
-        if (human.getParents() == null) human.initParents();
+        if (human.getParents() == null)
+            human.initParents();
         human.addParent(parent);
         return this;
     }

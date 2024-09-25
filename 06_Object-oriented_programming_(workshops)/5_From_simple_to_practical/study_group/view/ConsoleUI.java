@@ -27,7 +27,7 @@ public class ConsoleUI implements View {
     @Override
     public void start() {
         hello();
-        while (work){
+        while (work) {
             printMenu();
             execute();
         }
@@ -60,22 +60,22 @@ public class ConsoleUI implements View {
         presenter.addStudent(name, age);
     }
 
-    private void hello(){
+    private void hello() {
         System.out.println("Доброго времени суток!");
     }
 
-    private void execute(){
+    private void execute() {
         String line = scanner.nextLine();
-        if (checkTextForInt(line)){
+        if (checkTextForInt(line)) {
             int numCommand = Integer.parseInt(line);
-            if (checkCommand(numCommand)){
+            if (checkCommand(numCommand)) {
                 menu.execute(numCommand);
             }
         }
     }
 
-    private boolean checkTextForInt(String text){
-        if (text.matches("[0-9]+")){
+    private boolean checkTextForInt(String text) {
+        if (text.matches("[0-9]+")) {
             return true;
         } else {
             inputError();
@@ -83,8 +83,8 @@ public class ConsoleUI implements View {
         }
     }
 
-    private boolean checkCommand(int numCommand){
-        if (numCommand < menu.getSize()){
+    private boolean checkCommand(int numCommand) {
+        if (numCommand < menu.getSize()) {
             return true;
         } else {
             inputError();
@@ -92,11 +92,11 @@ public class ConsoleUI implements View {
         }
     }
 
-    private void printMenu(){
+    private void printMenu() {
         System.out.println(menu.menu());
     }
 
-    private void inputError(){
+    private void inputError() {
         System.out.println(INPUT_ERROR);
     }
 }

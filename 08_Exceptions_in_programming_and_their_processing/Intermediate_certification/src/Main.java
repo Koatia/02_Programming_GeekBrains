@@ -16,9 +16,10 @@ public class Main {
     }
 
     private static String[] input() {
-        System.out.println("Введите данные в произвольном порядке, разделенные пробелом:" + " Фамилия Имя Отчество датарождения номертелефона пол");
+        System.out.println("Введите данные в произвольном порядке, разделенные пробелом:" +
+                " Фамилия Имя Отчество датарождения номертелефона пол");
 
-//        String[] parseInput = "Иванов Иван Иванович 10.08.2001 89218883333 f".split(" ");
+        //        String[] parseInput = "Иванов Иван Иванович 10.08.2001 89218883333 f".split(" ");
 
         Scanner scanner = new Scanner(System.in);
         String[] parseInput = scanner.nextLine().split(" ");

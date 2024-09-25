@@ -8,7 +8,7 @@ public class SortByAge extends Command {
         description = "Отсортировать список по возрасту";
     }
 
-    public void execute(){
+    public void execute() {
         consoleUI.sortByAge();
     }
 }

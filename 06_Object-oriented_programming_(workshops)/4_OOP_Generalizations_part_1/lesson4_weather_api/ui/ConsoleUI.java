@@ -4,7 +4,7 @@ import presenter.Presenter;
 
 import java.util.Scanner;
 
-public class ConsoleUI implements View{
+public class ConsoleUI implements View {
 
     private Presenter presenter;
     private Scanner scanner;
@@ -16,7 +16,7 @@ public class ConsoleUI implements View{
 
     @Override
     public void start() {
-        while (true){
+        while (true) {
             String city = scan();
             presenter.getInfo(city);
         }

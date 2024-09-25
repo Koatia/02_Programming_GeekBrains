@@ -18,8 +18,10 @@ public class IsIsomorph {
     }
 
     public static boolean isIsomorphic(String st1, String st2) {
-        if (st1.length() != st2.length()) return false;
-        if (st1.equals(st2)) return true;
+        if (st1.length() != st2.length())
+            return false;
+        if (st1.equals(st2))
+            return true;
 
         HashMap<Character, Character> stringHashMap = new HashMap<>();
 

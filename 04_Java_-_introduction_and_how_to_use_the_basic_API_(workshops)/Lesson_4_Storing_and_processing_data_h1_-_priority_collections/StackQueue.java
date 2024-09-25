@@ -9,7 +9,7 @@ import java.util.Stack;
 
 public class StackQueue {
     public static void main(String[] args) {
-        int[] arr = { 1, 2, 3, 4, 5 };
+        int[] arr = {1, 2, 3, 4, 5};
         Stack<Integer> stack = fillPrintStack(arr);
         printStack(stack);
         System.out.println();
